@@ -46,7 +46,7 @@ public class Airline {
     @SuppressWarnings("serial")
     public static void parse() {
 	
-	String path = "airlines.dat";
+	String path = "Ressources/airlines.dat";
 	
 	File file = new File(path);
 	BufferedReader buffReader = null;

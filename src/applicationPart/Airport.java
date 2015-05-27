@@ -81,7 +81,7 @@ public class Airport {
     @SuppressWarnings("serial")
     public static void parse() {
 	
-	String path = "airports.dat";
+	String path = "Ressources/airports.dat";
 	
 	File file = new File(path);
 	BufferedReader buffReader = null;

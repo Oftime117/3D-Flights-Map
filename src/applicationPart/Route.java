@@ -52,7 +52,7 @@ public class Route {
     @SuppressWarnings("serial")
     public static void parse() {
 	
-	String path = "routes.dat";
+	String path = "Ressources/routes.dat";
 	File file = new File(path);
 	BufferedReader buffReader = null;
 	try {
