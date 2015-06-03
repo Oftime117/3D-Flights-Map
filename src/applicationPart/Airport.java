@@ -1,12 +1,14 @@
 package applicationPart;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 
 public class Airport {
 
@@ -81,19 +83,6 @@ public class Airport {
 	@SuppressWarnings("serial")
 	public static void parse() {
 
-		String path = "ressources/airports.dat";
-
-		File file = new File(path);
-		BufferedReader buffReader = null;
-		try {
-
-			buffReader = new BufferedReader(new FileReader(file));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			System.err.println("Impossible de trouver le fichier " + path);
-			return;
-		}
-
 		AirportsList = new ArrayList<Airport>() {
 
 			/* (non-Javadoc)
@@ -115,56 +104,32 @@ public class Airport {
 			}
 		};
 
+		String path = "ressources/airports.dat";
+
+		File file = new File(path);
+		CSVParser parser = null;
 		try {
-			String lineBuff;
-			while ((lineBuff = buffReader.readLine()) != null) {
-
-				String[] lineSplits;
-
-				/* Chercher meilleure Regex */
-				lineSplits = lineBuff.split("\"?,(?=(?:(?:[^\"]*\"){2})*[^\"]*$)\"?\"?");
-
-				if (lineSplits.length != 12) {
-					System.err.println("erreur sur le nombre d'arguments dans la ligne du fichier "
-							+ path);
-					System.err.println("length: " + lineSplits.length);
-					System.err.println("Contenu de la ligne: \n");
-
-					for (int i = 0; i < lineSplits.length; ++i) {
-						System.err.println(lineSplits[i]);
-					}
-					return;
-				}
-
-				int id = Integer.valueOf(lineSplits[0]);
-				String name = lineSplits[1];
-				String city = lineSplits[2];
-				String country = lineSplits[3];
-				String IATA_FAA_Code = lineSplits[4];
-				String ICAO_Code = lineSplits[5];
-				float latitude = Float.valueOf(lineSplits[6]);
-				float longitude = Float.valueOf(lineSplits[7]);
-				float altitude = Float.valueOf(lineSplits[8]);
-				float timezone = Float.valueOf(lineSplits[9]);
-				String DST = lineSplits[10];
-				String Tz_timezone = lineSplits[11];
-
-				AirportsList.add(new Airport(id, name, city, country, IATA_FAA_Code,
-						ICAO_Code, latitude, longitude, altitude, timezone,
-						DST, Tz_timezone));
-			}
-
-
+			parser = CSVParser.parse(file, Charset.forName("ISO-8859-1"), CSVFormat.MYSQL.withDelimiter(',').withQuote('"').withNullString("\\N"));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} finally {
-			try {
-				buffReader.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		}
+		for (CSVRecord csvRecord : parser) {
+			int id = Integer.valueOf(csvRecord.get(0));
+			String name = csvRecord.get(1);
+			String city = csvRecord.get(2);
+			String country = csvRecord.get(3);
+			String IATA_FAA_Code = csvRecord.get(4);
+			String ICAO_Code = csvRecord.get(5);
+			float latitude = Float.valueOf(csvRecord.get(6));
+			float longitude = Float.valueOf(csvRecord.get(7));
+			float altitude = Float.valueOf(csvRecord.get(8));
+			float timezone = Float.valueOf(csvRecord.get(9));
+			String DST = csvRecord.get(10);
+			String Tz_timezone = csvRecord.get(11);
+
+			AirportsList.add(new Airport(id, name, city, country, IATA_FAA_Code,
+					ICAO_Code, latitude, longitude, altitude, timezone,
+					DST, Tz_timezone));
 		}
 	}
 
