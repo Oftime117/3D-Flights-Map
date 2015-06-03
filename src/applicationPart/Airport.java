@@ -3,7 +3,7 @@ package applicationPart;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import org.apache.commons.csv.CSVFormat;
@@ -25,10 +25,7 @@ public class Airport {
 	private String DST;
 	private String Tz_timezone;
 
-
-	private static ArrayList<Airport> AirportsList;
-
-
+	private static HashMap<TripleKey, Airport> airportsMap = null;
 
 	public Airport(int id, String name, String city, String country,
 			String iATA_FAA_Code, String iCAO_Code, float latitude,
@@ -49,53 +46,32 @@ public class Airport {
 		Tz_timezone = tz_timezone;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "Airport : " + name
-				+ "\n\t{"
-				+ "\n\t\tid = " + id 
-				+ "\n\t\tcity = " + city
-				+ "\n\t\tcountry = " + country 
-				+ "\n\t\tIATA_FAA_Code = " + IATA_FAA_Code
-				+ "\n\t\tICAO_Code = " + ICAO_Code 
-				+ "\n\t\tlatitude = " + latitude
-				+ "\n\t\tlongitude = " + longitude 
-				+ "\n\t\taltitude = " + altitude
-				+ "\n\t\ttimezone = " + timezone 
-				+ "\n\t\tDST = " + DST 
-				+ "\n\t\tTz_timezone = " + Tz_timezone
-				+ "\n\t}";
-	}
-
 	/**
-	 * @return the airportsList
+	 * @return the airportsMap
 	 */
-	public static ArrayList<Airport> getAirportsList() {
-		return AirportsList;
+	public static HashMap<TripleKey, Airport> getairportsMap() {
+		if(airportsMap == null) Airport.parse();
+		return airportsMap;
 	}
-
-
 
 	@SuppressWarnings("serial")
 	public static void parse() {
 
-		AirportsList = new ArrayList<Airport>() {
+		airportsMap = new HashMap<TripleKey, Airport>() {
 
-			/* (non-Javadoc)
+			/*
+			 * (non-Javadoc)
+			 * 
 			 * @see java.lang.Object#toString()
 			 */
 			@Override
 			public String toString() {
 
 				StringBuilder sb = new StringBuilder();
-				Iterator<Airport> it = this.iterator();
+				Iterator<Airport> it = this.values().iterator();
 
 				sb.append("List of Airports : ");
-				while(it.hasNext()) {
+				while (it.hasNext()) {
 					Airport buff = it.next();
 					sb.append("\n\t" + buff.toString() + "\n");
 				}
@@ -127,10 +103,27 @@ public class Airport {
 			String DST = csvRecord.get(10);
 			String Tz_timezone = csvRecord.get(11);
 
-			AirportsList.add(new Airport(id, name, city, country, IATA_FAA_Code,
-					ICAO_Code, latitude, longitude, altitude, timezone,
-					DST, Tz_timezone));
+			airportsMap.put(new TripleKey(id, IATA_FAA_Code, ICAO_Code), new Airport(id, name, city, country,
+					IATA_FAA_Code, ICAO_Code, latitude, longitude,
+					altitude, timezone, DST, Tz_timezone));
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Airport : " + name + "\n\t{" + "\n\t\tid = " + id
+				+ "\n\t\tcity = " + city + "\n\t\tcountry = " + country
+				+ "\n\t\tIATA_FAA_Code = " + IATA_FAA_Code
+				+ "\n\t\tICAO_Code = " + ICAO_Code + "\n\t\tlatitude = "
+				+ latitude + "\n\t\tlongitude = " + longitude
+				+ "\n\t\taltitude = " + altitude + "\n\t\ttimezone = "
+				+ timezone + "\n\t\tDST = " + DST + "\n\t\tTz_timezone = "
+				+ Tz_timezone + "\n\t}";
 	}
 
 }

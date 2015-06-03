@@ -3,7 +3,7 @@ package applicationPart;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import org.apache.commons.csv.CSVFormat;
@@ -21,7 +21,7 @@ public class Airline {
 	private String country;
 	private String active;
 
-	private static ArrayList<Airline> airlinesList;
+	private static HashMap<TripleKey, Airline> airlinesMap = null;
 
 	public Airline(int id, String name, String alias, String iATA_Code,
 			String iCAO_Code, String callsign, String country, String active) {
@@ -36,19 +36,17 @@ public class Airline {
 		this.active = active;
 	}
 
-
-
 	/**
-	 * @return the airlinesList
+	 * @return the airlinesMap
 	 */
-	public static ArrayList<Airline> getAirlinesList() {
-		return airlinesList;
+	public static HashMap<TripleKey, Airline> getairlinesMap() {
+		return airlinesMap;
 	}
 
 	@SuppressWarnings("serial")
 	public static void parse() {
 
-		airlinesList = new ArrayList<Airline>() {
+		airlinesMap = new HashMap<TripleKey, Airline>() {
 			/* (non-Javadoc)
 			 * @see java.lang.Object#toString()
 			 */
@@ -56,7 +54,7 @@ public class Airline {
 			public String toString() {
 
 				StringBuilder sb = new StringBuilder();
-				Iterator<Airline> it = this.iterator();
+				Iterator<Airline> it = this.values().iterator();
 
 				sb.append("List of Airlines : ");
 				while(it.hasNext()) {
@@ -87,28 +85,22 @@ public class Airline {
 			String country = csvRecord.get(6);
 			String active = csvRecord.get(7);
 
-			airlinesList.add(new  Airline(id, name, alias, IATA_Code, 
+			airlinesMap.put(new TripleKey(id, IATA_Code, ICAO_Code), new Airline(id, name, alias, IATA_Code,
 					ICAO_Code, callsign, country, active));
 		}
 	}
 
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "Airline : " + name
-				+ "\n\t{"
-				+ "\n\t\tid = " + id 
-				+ "\n\t\tnalias = " + alias
-				+ "\n\t\tIATA_Code = " + IATA_Code 
-				+ "\n\t\tICAO_Code = " + ICAO_Code
-				+ "\n\t\tcallsign = " + callsign 
-				+ "\n\t\tcountry = " + country
-				+ "\n\t\tactive = " + active
-				+ "\n\t}";
+		return "Airline : " + name + "\n\t{" + "\n\t\tid = " + id
+				+ "\n\t\talias = " + alias + "\n\t\tIATA_Code = " + IATA_Code
+				+ "\n\t\tICAO_Code = " + ICAO_Code + "\n\t\tcallsign = "
+				+ callsign + "\n\t\tcountry = " + country + "\n\t\tactive = "
+				+ active + "\n\t}";
 	}
-
-
 }
