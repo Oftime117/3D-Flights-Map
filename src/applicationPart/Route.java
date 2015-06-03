@@ -10,42 +10,60 @@ import java.util.Iterator;
 
 public class Route {
 
-    private String airlineCode;
-    private int airlineID;
-    private String srcAirportCode;
-    private int srcAirportID;
-    private String dstAirportCode;
-    private int dstAirportID;
+
     private String codeshare;
     private int stops;
     private String equipment;
-  
     
-    private static ArrayList<Route> RoutesList; 
+    private Airport srcAirport;
+    private Airport dstAirport;
+    private Airline airline;
     
+    private static ArrayList<Route> routesList = null; 
     
+    String airlineCode; int airlineID; String srcAirportCode;
+    int srcAirportID; String dstAirportCode; int dstAirportID;
 
     public Route(String airlineCode, int airlineID, String srcAirportCode,
 	    int srcAirportID, String dstAirportCode, int dstAirportID,
 	    String codeshare, int stops, String equipment) {
 	super();
+
+	this.codeshare = codeshare;
+	this.stops = stops;
+	this.equipment = equipment;
+	
 	this.airlineCode = airlineCode;
 	this.airlineID = airlineID;
 	this.srcAirportCode = srcAirportCode;
 	this.srcAirportID = srcAirportID;
 	this.dstAirportCode = dstAirportCode;
 	this.dstAirportID = dstAirportID;
-	this.codeshare = codeshare;
-	this.stops = stops;
-	this.equipment = equipment;
+	
+	if(airlineCode.length() == 2) airline = Airline.getairlinesMap().get(new TripleKey(airlineID, airlineCode, ""));
+	else if (airlineCode.length() == 3) airline = Airline.getairlinesMap().get(new TripleKey(airlineID, "", airlineCode));
+	else System.err.println("Erreur sur le nombre de caractère du airlineCode\nairlineCode = " + airlineCode);
+	
+	if(srcAirportCode.length() == 3) srcAirport = Airport.getairportsMap().get(new TripleKey(srcAirportID, srcAirportCode, ""));
+	else if(srcAirportCode.length() == 4) srcAirport = Airport.getairportsMap().get(new TripleKey(srcAirportID, "", srcAirportCode));
+	else System.err.println("Erreur sur le nombre de caractère du srcAirportCode\nsrcAirportCode = " + srcAirportCode);
+	
+
+	if(dstAirportCode.length() == 3) dstAirport = Airport.getairportsMap().get(new TripleKey(dstAirportID, dstAirportCode, ""));
+	else if(dstAirportCode.length() == 4) dstAirport = Airport.getairportsMap().get(new TripleKey(dstAirportID, "", dstAirportCode));
+	else System.err.println("Erreur sur le nombre de caractère du dstAirportCode\ndstAirportCode = " + dstAirportCode);
+	
+	//System.err.println();
+	
     }
 
 
     /**
      * @return the routesList
      */
-    public static ArrayList<Route> getRoutesList() {
-        return RoutesList;
+    public static ArrayList<Route> getroutesList() {
+	if(routesList == null) Route.parse();
+        return routesList;
     }
 
     
@@ -64,7 +82,7 @@ public class Route {
 	    return;
 	}
 
-	RoutesList = new ArrayList<Route>() {
+	routesList = new ArrayList<Route>() {
 	  
 	    /*
 	     * (non-Javadoc)
@@ -155,7 +173,7 @@ public class Route {
 		    equipment = null;
 		}
 
-		RoutesList.add(new Route(airlineCode, airlineID, srcAirportCode,
+		routesList.add(new Route(airlineCode, airlineID, srcAirportCode,
 			srcAirportID, dstAirportCode, dstAirportID, codeshare,
 			stops, equipment));
 	    }
@@ -180,18 +198,20 @@ public class Route {
     public String toString() {
 	return "Route "
 		+ "\n\t{"
-		+ "\n\t\tairlineCode = " + airlineCode 
-		+ "\n\t\tairlineID = " + airlineID
-		+ "\n\t\tsrcAirportCode = " + srcAirportCode 
-		+ "\n\t\tsrcAirportID = " + srcAirportID 
-		+ "\n\t\tdstAirportCode = " + dstAirportCode
-		+ "\n\t\tdstAirportID = " + dstAirportID 
+		+ "\n\t\tairline = " + airline 
+		+ "\n\t\tsrcAirport = " + srcAirport
+		+ "\n\t\tdstAirport = " + dstAirport
 		+ "\n\t\tcodeshare = " + codeshare
 		+ "\n\t\tstops = " + stops 
 		+ "\n\t\tequipment = " + equipment
 		+ "\n\t}";
     }
     
-    
+    public String test() {
+	
+	return "airlineCode: " + airlineCode +"\nairlineID: " + airlineID
+		+ "\nsrcAirportCode: " + srcAirportCode + "\nsrcAirportID: " + srcAirportID
+		+ "\ndstAirportCode: " + dstAirportCode + "\ndstAirportID: " + dstAirportID + '\n';
+    }
     
 }

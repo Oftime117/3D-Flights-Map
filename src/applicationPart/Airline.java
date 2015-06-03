@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 public class Airline {
@@ -18,8 +18,8 @@ public class Airline {
     private String callsign;
     private String country;
     private String active;
-    
-    private static ArrayList<Airline> airlinesList;
+
+    private static HashMap<TripleKey, Airline> airlinesMap = null;
 
     public Airline(int id, String name, String alias, String iATA_Code,
 	    String iCAO_Code, String callsign, String country, String active) {
@@ -34,20 +34,18 @@ public class Airline {
 	this.active = active;
     }
 
-    
-    
     /**
-     * @return the airlinesList
+     * @return the airlinesMap
      */
-    public static ArrayList<Airline> getAirlinesList() {
-        return airlinesList;
+    public static HashMap<TripleKey, Airline> getairlinesMap() {
+	return airlinesMap;
     }
 
     @SuppressWarnings("serial")
     public static void parse() {
-	
-	String path = "Ressources/airlines.dat";
-	
+
+	String path = "ressources/airlines.dat";
+
 	File file = new File(path);
 	BufferedReader buffReader = null;
 	try {
@@ -59,38 +57,42 @@ public class Airline {
 	    return;
 	}
 
-	airlinesList = new ArrayList<Airline>() {
-	    
-	    /* (non-Javadoc)
+	airlinesMap = new HashMap<TripleKey, Airline>() {
+
+	    /*
+	     * (non-Javadoc)
+	     * 
 	     * @see java.lang.Object#toString()
 	     */
 	    @Override
 	    public String toString() {
-		
+
 		StringBuilder sb = new StringBuilder();
-		Iterator<Airline> it = this.iterator();
-		
+		Iterator<Airline> it = this.values().iterator();
+
 		sb.append("List of Airlines : ");
-		while(it.hasNext()) {
+		while (it.hasNext()) {
 		    Airline buff = it.next();
 		    sb.append("\n\t" + buff.toString() + "\n");
 		}
-		
+
 		return sb.toString();
-	    }  
+	    }
 	};
-	
+
 	try {
 	    String lineBuff;
 	    while ((lineBuff = buffReader.readLine()) != null) {
-		
+
 		String[] lineSplits;
 
 		/* Chercher meilleure Regex */
-		lineSplits = lineBuff.split("\"?,(?=(?:(?:[^\"]*\"){2})*[^\"]*$)\"?\"?");
+		lineSplits = lineBuff
+			.split("\"?,(?=(?:(?:[^\"]*\"){2})*[^\"]*$)\"?\"?");
 
 		if (lineSplits.length != 8) {
-		    System.err.println("erreur sur le nombre d'arguments dans la ligne du fichier "
+		    System.err
+			    .println("erreur sur le nombre d'arguments dans la ligne du fichier "
 				    + path);
 		    System.err.println("length: " + lineSplits.length);
 		    System.err.println("Contenu de la ligne: \n");
@@ -100,21 +102,20 @@ public class Airline {
 		    }
 		    return;
 		}
-		
+
 		int id = Integer.valueOf(lineSplits[0]);
 		String name = lineSplits[1];
-		String alias = lineSplits[2]; 
+		String alias = lineSplits[2];
 		String IATA_Code = lineSplits[3];
 		String ICAO_Code = lineSplits[4];
 		String callsign = lineSplits[5];
 		String country = lineSplits[6];
 		String active = lineSplits[7];
 
-		airlinesList.add(new  Airline(id, name, alias, IATA_Code, 
-		ICAO_Code, callsign, country, active));
+		airlinesMap.put(new TripleKey(id, IATA_Code, ICAO_Code), new Airline(id, name, alias, IATA_Code,
+			ICAO_Code, callsign, country, active));
 	    }
-	    
-	    
+
 	} catch (IOException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
@@ -128,23 +129,18 @@ public class Airline {
 	}
     }
 
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
-	return "Airline : " + name
-		+ "\n\t{"
-		+ "\n\t\tid = " + id 
-		+ "\n\t\tnalias = " + alias
-		+ "\n\t\tIATA_Code = " + IATA_Code 
-		+ "\n\t\tICAO_Code = " + ICAO_Code
-		+ "\n\t\tcallsign = " + callsign 
-		+ "\n\t\tcountry = " + country
-		+ "\n\t\tactive = " + active
-		+ "\n\t}";
+	return "Airline : " + name + "\n\t{" + "\n\t\tid = " + id
+		+ "\n\t\talias = " + alias + "\n\t\tIATA_Code = " + IATA_Code
+		+ "\n\t\tICAO_Code = " + ICAO_Code + "\n\t\tcallsign = "
+		+ callsign + "\n\t\tcountry = " + country + "\n\t\tactive = "
+		+ active + "\n\t}";
     }
 
-    
 }

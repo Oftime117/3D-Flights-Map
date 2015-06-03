@@ -1,23 +1,23 @@
 package ghaziHamelin;
 
-import applicationPart.AirlineParsedList;
+import java.util.Iterator;
+
+import applicationPart.Airline;
 import applicationPart.Airport;
-import applicationPart.AirportParsedList;
-import applicationPart.RouteParsedList;
+import applicationPart.Route;
+import applicationPart.TripleKey;
+
 
 public class MainMethod {
 
     public static void main(String[] args) {
 	
-	//AirportParsedList test = new AirportParsedList("airports.dat");
 	Airport.parse();
-	//Airport tests = Airport.getAirportsList().get(0);
+	Airline.parse();
+	Route.parse();
 	
-	System.err.println(Airport.getAirportsList());
-	
-	//RouteParsedList testr = new RouteParsedList("routes.dat");
-	//System.out.println(testr);
-	//System.err.println(testr.size());
+	TripleKey key = new TripleKey(-1,null, "ZJSY"), key2 = new TripleKey(-1, null, "ZJY");
+	System.err.println(Airport.getairportsMap().get(key));
     }
 
 }
