@@ -107,9 +107,6 @@ public class Airport implements Comparable<Airport> {
 		return airportsMap;
 	}
 
-
-	
-
 	/**
 	 * @return the groupedRoutesToMap
 	 */
@@ -163,6 +160,48 @@ public class Airport implements Comparable<Airport> {
 	 */
 	public City getCity() {
 		return city;
+	}
+	
+	/**
+	 * @return the latitude
+	 */
+	public float getLatitude() {
+		return latitude;
+	}
+
+	/**
+	 * @return the longitude
+	 */
+	public float getLongitude() {
+		return longitude;
+	}
+
+	/**
+	 * @return the altitude
+	 */
+	public float getAltitude() {
+		return altitude;
+	}
+
+	/**
+	 * @return the timezone
+	 */
+	public float getTimezone() {
+		return timezone;
+	}
+
+	/**
+	 * @return the dST
+	 */
+	public String getDST() {
+		return DST;
+	}
+
+	/**
+	 * @return the tz_timezone
+	 */
+	public String getTz_timezone() {
+		return Tz_timezone;
 	}
 
 	@SuppressWarnings("serial")
@@ -254,7 +293,7 @@ public class Airport implements Comparable<Airport> {
 		//				+ timezone + "\n\t\tDST = " + DST + "\n\t\tTz_timezone = "
 		//				+ Tz_timezone + "\n\t}";
 		return  name
-				+ " --  Ville : " + city;
+				+ " --  Ville : " + city + "\t(latitude: " + latitude + ", longitude: " + longitude + ", altitude: " + altitude + ")\n";
 	}
 
 	public static ArrayList<Airport> filterByName(String name) {
