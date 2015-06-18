@@ -13,6 +13,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -35,6 +40,12 @@ import javax.swing.SwingUtilities;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeCanvasContext;
 
+import applicationPart.Airport;
+import applicationPart.Country;
+import applicationPart.City;
+import applicationPart.Airline;
+import applicationPart.Filter;
+
 public class MainWindow extends JFrame {
 
 	/**
@@ -46,7 +57,10 @@ public class MainWindow extends JFrame {
 	private Canvas canvas;
 
 
-	private JTextField dstAirpNameField, srcAirpNameField, airlineNameField, srcCityNameField, dstCityNameField, srcCountryNameField, dstCountryNameField;
+	private ComboBoxAutoComplete<Airport> dstAirpNameField, srcAirpNameField;
+	private ComboBoxAutoComplete<City> srcCityNameField, dstCityNameField;
+	private ComboBoxAutoComplete<Country>srcCountryNameField, dstCountryNameField;
+	private ComboBoxAutoComplete<Airline> airlineNameField;
 	private JCheckBox allAirpCheckBox;
 	JSpinner airpSpinner, arcSpinner;
 
@@ -78,9 +92,57 @@ public class MainWindow extends JFrame {
 		JPanel srcPanel = new JPanel(true);
 		srcPanel.setLayout(new GridBagLayout());
 		
-		srcCountryNameField = new JTextField(20);
-		srcCityNameField = new JTextField(20);
-		srcAirpNameField = new JTextField(20);
+		srcCountryNameField = new ComboBoxAutoComplete<Country>(Country.getCMap().values());
+		
+		srcCityNameField = new ComboBoxAutoComplete<City>(
+				Filter.filterCitiesByCountry(((Country)(srcCountryNameField.getSelectedItem())).getName()));
+		
+		ArrayList<ArrayList<Airport>> airportsByCity = 
+				Filter.filterAirportsByCity(((City)(srcCityNameField.getSelectedItem())).getName());
+		ArrayList<Airport> airports = new ArrayList<Airport>();
+		Iterator<ArrayList<Airport>> it = airportsByCity.iterator();
+		while(it.hasNext()) {
+			Iterator<Airport> it2 = it.next().iterator();
+			while(it2.hasNext()) {
+				Airport airport = it2.next();
+				if(airport.getCity().equals(srcCityNameField.getSelectedItem()))
+					airports.add(airport);
+			}
+		}
+		srcAirpNameField = new ComboBoxAutoComplete<Airport>(airports);
+		
+		//Listener selection des items des combo box
+		srcCountryNameField.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				srcAirpNameField.setItems(null);
+				srcCityNameField.setItems(
+						Filter.filterCitiesByCountry(((Country)(srcCountryNameField.getSelectedItem())).getName()));
+			}
+		});
+		srcCityNameField.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(srcCityNameField.getSelectedItem() != null) {
+					ArrayList<ArrayList<Airport>> airportsByCity = 
+							Filter.filterAirportsByCity(((City)(srcCityNameField.getSelectedItem())).getName());
+					ArrayList<Airport> airports = new ArrayList<Airport>();
+					Iterator<ArrayList<Airport>> it = airportsByCity.iterator();
+					while(it.hasNext()) {
+						Iterator<Airport> it2 = it.next().iterator();
+						while(it2.hasNext()) {
+							Airport airport = it2.next();
+							if(airport.getCity().equals(srcCityNameField.getSelectedItem()))
+								airports.add(airport);
+						}
+					}
+					srcAirpNameField.setItems(airports);
+				}
+			}
+		});
+		
 		
 		addGridBagItem(srcPanel, new JLabel("Country * :"), 0, 0, 1, 1, GridBagConstraints.EAST);
 		addGridBagItem(srcPanel,new JLabel("City :"), 0, 1, 1, 1, GridBagConstraints.EAST);
@@ -99,9 +161,55 @@ public class MainWindow extends JFrame {
 		dstPanel.setLayout(new GridBagLayout());
 		
 
-		dstCountryNameField = new JTextField(20);
-		dstCityNameField = new JTextField(20);
-		dstAirpNameField = new JTextField(20);
+		dstCountryNameField = new ComboBoxAutoComplete<Country>(Country.getCMap().values());
+		
+		dstCityNameField = new ComboBoxAutoComplete<City>(
+				Filter.filterCitiesByCountry(((Country)(dstCountryNameField.getSelectedItem())).getName()));
+		
+		airportsByCity = Filter.filterAirportsByCity(((City)(dstCityNameField.getSelectedItem())).getName());
+		airports = new ArrayList<Airport>();
+		it = airportsByCity.iterator();
+		while(it.hasNext()) {
+			Iterator<Airport> it2 = it.next().iterator();
+			while(it2.hasNext()) {
+				Airport airport = it2.next();
+				if(airport.getCity().equals(dstCityNameField.getSelectedItem()))
+					airports.add(airport);
+			}
+		}
+		dstAirpNameField = new ComboBoxAutoComplete<Airport>(airports);
+		
+		//Listener selection des items des combo box
+		dstCountryNameField.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				dstAirpNameField.setItems(null);
+				dstCityNameField.setItems(
+						Filter.filterCitiesByCountry(((Country)(dstCountryNameField.getSelectedItem())).getName()));
+			}
+		});
+		dstCityNameField.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(dstCityNameField.getSelectedItem() != null) {
+					ArrayList<ArrayList<Airport>> airportsByCity = 
+							Filter.filterAirportsByCity(((City)(dstCityNameField.getSelectedItem())).getName());
+					ArrayList<Airport> airports = new ArrayList<Airport>();
+					Iterator<ArrayList<Airport>> it = airportsByCity.iterator();
+					while(it.hasNext()) {
+						Iterator<Airport> it2 = it.next().iterator();
+						while(it2.hasNext()) {
+							Airport airport = it2.next();
+							if(airport.getCity().equals(dstCityNameField.getSelectedItem()))
+								airports.add(airport);
+						}
+					}
+					dstAirpNameField.setItems(airports);
+				}
+			}
+		});
 		
 		addGridBagItem(dstPanel, new JLabel("Country * :"), 0, 0, 1, 1, GridBagConstraints.EAST);
 		addGridBagItem(dstPanel, new JLabel("City :"), 0, 1, 1, 1, GridBagConstraints.EAST);
@@ -117,7 +225,7 @@ public class MainWindow extends JFrame {
 		JPanel optionsPanel = new JPanel(true);
 		optionsPanel.setLayout(new GridBagLayout());
 		
-		airlineNameField = new JTextField(20);
+		airlineNameField = new ComboBoxAutoComplete<>(Airline.getairlinesMap().values());
 		
 //		allAirpCheckBox.setHorizontalTextPosition(SwingUtilities.LEFT);
 		
