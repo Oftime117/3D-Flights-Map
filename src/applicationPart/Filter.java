@@ -57,6 +57,24 @@ public final class Filter {
 		return buff;
 	}
 
+	public static ArrayList<ArrayList<Airport>> filterAirportByCountry(String name) {
+		
+		ArrayList<ArrayList<Airport>> buff = new ArrayList<ArrayList<Airport>>();
+		
+		Country.getCMap()
+		.get(name)
+		.getCCMap()
+		.values()
+		.forEach(city -> {
+			buff.add(city.getCityAirportMap()
+					.values()
+					.stream()
+					.collect(Collectors.toCollection(ArrayList::new)));
+		});
+		
+		return buff;
+	}
+	
 	public static ArrayList<City> filterCitiesByCountry(String name) {
 
 		return Country

@@ -1,6 +1,7 @@
 package ghaziHamelin;
 
 import gui.Earth3DMap;
+import gui.MainWindow;
 
 import java.time.Clock;
 
@@ -10,6 +11,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import applicationPart.Airline;
 import applicationPart.Airport;
+import applicationPart.Filter;
 import applicationPart.Route;
 
 import com.jme3.system.AppSettings;
@@ -65,6 +67,7 @@ public class MainMethod {
 //		Filter.filterAirportsByCity("London").forEach(System.out::println);
 //		City.filterByName("Paris").forEach(System.out::println);
 //		System.out.println(Filter.filterRoutesToAirport2("Charles de Gaulle").stream().distinct().count());
+//		Filter.filterAirportByCountry("France").forEach(System.out::println);
 		System.out.println(-deb + clock.millis());
 		
 	}
@@ -81,13 +84,7 @@ public class MainMethod {
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				Earth3DMap earth = new Earth3DMap();
-				
-				earth.setSettings(settings);
-				earth.setShowSettings(false);
-				earth.setPauseOnLostFocus(false);
-				
-				earth.start();
+				new MainWindow();
 			}
 		});
 		

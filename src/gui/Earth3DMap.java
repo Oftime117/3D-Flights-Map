@@ -13,14 +13,12 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
-import com.jme3.math.Spline;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.VertexBuffer;
-import com.jme3.scene.shape.Curve;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.util.BufferUtils;
 
@@ -33,10 +31,11 @@ public class Earth3DMap extends SimpleApplication {
 
 	private Node earthNode = new Node();
 	private Node airportsNode = new Node();
-	private Node lineNode = new Node();
+	private Node arcNode = new Node();
+	private Node overlayNode = new Node();
 	
 	private float airportRadius = 0.002f;
-	private ColorRGBA airportColor = ColorRGBA.Yellow;
+//	private ColorRGBA airportColor = ColorRGBA.Yellow;
 	
 	private float scale = 2.0f;
 	private int taille = 200;
@@ -50,21 +49,23 @@ public class Earth3DMap extends SimpleApplication {
 		assetManager.registerLocator("earth.zip", ZipLocator.class);
 		earth_geom = assetManager.loadModel("Sphere.mesh.xml");
 		
+		overlayNode.attachChild(airportsNode);
+		overlayNode.attachChild(arcNode);
+		
 		earthNode.attachChild(earth_geom);
-		earthNode.attachChild(airportsNode);
+		earthNode.attachChild(overlayNode);
 		earthNode.scale(scale);
 		
 		Route buff = Route.getRoutesList().get(0);
 		
-		drawRoute(buff.getSrcAirport().getLatitude(), buff.getSrcAirport().getLongitude(), buff.getDstAirport().getLatitude(), buff.getDstAirport().getLongitude());
+//		drawRoute(buff.getSrcAirport().getLatitude(), buff.getSrcAirport().getLongitude(), buff.getDstAirport().getLatitude(), buff.getDstAirport().getLongitude());
 		
 		
-		
-		rootNode.attachChild(lineNode);
+		rootNode.attachChild(arcNode);
 		rootNode.attachChild(earthNode);
-//		camInit();
+		camInit();
 		
-		displayAllAirports();
+		displayAllAirports(ColorRGBA.Red);
 		GeometryBatchFactory.optimize(earthNode);
 	}
 	
@@ -80,7 +81,7 @@ public class Earth3DMap extends SimpleApplication {
 							* FastMath.cos(lat_cor * FastMath.DEG_TO_RAD));
 	}
 	
-	public void displayAirport(float latitude, float longitude, String name)
+	public void displayAirport(float latitude, float longitude, String name, ColorRGBA airportColor)
 	{
 		Sphere sphere = new Sphere(16, 8, airportRadius);
 		Geometry airpGeom = new Geometry(name, sphere);
@@ -88,15 +89,15 @@ public class Earth3DMap extends SimpleApplication {
 		airpMat.setColor("Color", airportColor);
 		airpGeom.setMaterial(airpMat);
 		airpGeom.setLocalTranslation(geoCoordTo3dCoord(latitude, longitude));
-		airportsNode.attachChild(airpGeom);
+		if (!airportsNode.hasChild(airpGeom)) airportsNode.attachChild(airpGeom);
 	}
 	
-	private void displayAllAirports() {
+	private void displayAllAirports(ColorRGBA airportColor) {
 		Airport.getairportsMap()
 		.values()
 		//.stream().limit(1000)
 		.forEach(airport -> {
-			displayAirport(airport.getLatitude(), airport.getLongitude(), airport.getName() + airport.getCity().getName());
+			displayAirport(airport.getLatitude(), airport.getLongitude(), airport.getName() + airport.getCity().getName(), airportColor);
 		});
 	}
 	
@@ -105,22 +106,22 @@ public class Earth3DMap extends SimpleApplication {
 		flyCam.setEnabled(false);
 		
 		ChaseCamera chaseCam = new ChaseCamera(cam, earthNode, inputManager);
-		
+		chaseCam.setDownRotateOnCloseViewOnly(true);
 		chaseCam.setDragToRotate(true);
-		//chaseCam.setHideCursorOnRotate(true);
+		chaseCam.setHideCursorOnRotate(true);
 		chaseCam.setSmoothMotion(true);
-		//chaseCam.setTrailingEnabled(true);
+		chaseCam.setTrailingEnabled(true);
 		//chaseCam.setToggleRotationTrigger(triggers);
 		// param�tres 
 		
 		chaseCam.setInvertVerticalAxis(true);
-		chaseCam.setRotationSpeed(10.0f);
-		//chaseCam.setRotationSensitivity(5000.0f);
+		chaseCam.setRotationSpeed(4.0f);
+//		chaseCam.setRotationSensitivity(500.0f);
 		chaseCam.setMinVerticalRotation((float) -(Math.PI/2 - 0.0001f));
 		chaseCam.setMaxVerticalRotation((float) Math.PI/2);
-		chaseCam.setMinDistance(1.45f * scale);
+		chaseCam.setMinDistance(1.5f * scale);
 		chaseCam.setMaxDistance(4 * scale);
-		chaseCam.setZoomSensitivity(1.5f);
+		chaseCam.setZoomSensitivity(1.2f);
 		
 		inputManager.addMapping("Rotate Left", new KeyTrigger(KeyInput.KEY_LEFT));
 		inputManager.addMapping("Rotate Right", new KeyTrigger(KeyInput.KEY_RIGHT));
@@ -145,34 +146,9 @@ public class Earth3DMap extends SimpleApplication {
 		
 		Vector3f srcCoord = geoCoordTo3dCoord(srcLat, srcLon);
 		Vector3f dstCoord = geoCoordTo3dCoord(dstLat, dstLon);
-		
-//		System.out.println("srcCoord: " + srcCoord);
-//		System.out.println("dstCoord: " + dstCoord);
-//		System.out.println("interpol: " +FastMath.interpolateLinear(0.5f, srcCoord, dstCoord));
-//		srcCoord = srcCoord.normalizeLocal();
-//		dstCoord = dstCoord.normalizeLocal();
-//		System.out.println("srcCoordNorm: " + srcCoord);
-//		System.out.println("dstCoordNorm: " + dstCoord);
-//		System.out.println(srcCoord.distance(dstCoord));
-//		vertices[0] = new Vector3f(dstCoord);
-//		vertices[1] = new Vector3f(srcCoord);
-//		System.out.println(srcCoord.interpolate(dstCoord, 0.5f));
 		System.out.println(earth_geom.getWorldScale());
-//		vertices = new Vector3f[taille];
-		for(int i = 0; i < taille; i++)
-		{
-			float t = i / 25.0f;
-//			vertices[i] = new Vector3f(FastMath.sin(t), srcCoord.distance(dstCoord), FastMath.cos(t));
-//			vertices[i] = new Vector3f(srcCoord.x, )
-//			vertices[i]= dstCoord.subtract(srcCoord);
-//			vertices[i] = new Vector3f(srcCoo);
-//			vertices[i].normalize();
-			
-			// hauteur d = R - sqrt(R² - distance deux points²/4)
-		}
+
 		
-		Curve curve = new Curve();
-//		curve.
 		
 		Mesh lineMesh = new Mesh();
 		lineMesh.setMode(Mesh.Mode.LineStrip);
@@ -187,7 +163,7 @@ public class Earth3DMap extends SimpleApplication {
 		lineGeo.scale(dstCoord.distance(srcCoord));
 //		lineGeo.setLocalTranslation(dstCoord);
 		
-		lineNode.attachChild(lineGeo);
+		arcNode.attachChild(lineGeo);
 		
 	}
 	
