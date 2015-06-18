@@ -91,7 +91,7 @@ public class City implements Comparable<City>{
 	 */
 	@Override
 	public String toString() {
-		return name + " (" + country + ")";
+		return name;
 	}
 
 	public static ArrayList<City> filterByName(String name) {

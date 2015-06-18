@@ -51,8 +51,13 @@ public class AutoCompletion extends PlainDocument {
                     hitBackspaceOnSelection=editor.getSelectionStart()!=editor.getSelectionEnd();
                     break;
                     // ignore delete key
+                    //case KeyEvent.VK_DELETE : e.consume();
+                    //comboBox.getToolkit().beep();
+                    //break;
                     case KeyEvent.VK_DELETE : e.consume();
-                    comboBox.getToolkit().beep();
+                    if(comboBox.getSelectedItem() != null && editor.getSelectedText().equalsIgnoreCase(comboBox.getSelectedItem().toString())) {
+                    	comboBox.setSelectedItem(null);
+                    }
                     break;
                 }
             }
@@ -181,17 +186,5 @@ public class AutoCompletion extends PlainDocument {
     private boolean startsWithIgnoreCase(String str1, String str2) {
         return str1.toUpperCase().startsWith(str2.toUpperCase());
     }
-    
-    private static void createAndShowGUI() {
-        // the combo box (add/modify items if you like to)
-		final JComboBox<String> comboBox = new JComboBox<String>();
-		applicationPart.Country.getCMap().values().forEach(country -> comboBox.addItem(country.toString()));
-		enable(comboBox);
 
-        // create and show a window containing the combo box
-        final JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(3);
-        frame.getContentPane().add(comboBox);
-        frame.pack(); frame.setVisible(true);
-    }
 }

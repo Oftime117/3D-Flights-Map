@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
@@ -57,14 +58,14 @@ public class MainWindow extends JFrame {
 	private Canvas canvas;
 
 
-	private ComboBoxAutoComplete<Airport> dstAirpNameField, srcAirpNameField;
+	private ComboBoxAutoComplete<Airport> srcAirpNameField, dstAirpNameField;
 	private ComboBoxAutoComplete<City> srcCityNameField, dstCityNameField;
 	private ComboBoxAutoComplete<Country>srcCountryNameField, dstCountryNameField;
 	private ComboBoxAutoComplete<Airline> airlineNameField;
 	private JCheckBox allAirpCheckBox;
 	JSpinner airpSpinner, arcSpinner;
 
-	
+
 	public MainWindow() throws HeadlessException {
 		// TODO Auto-generated constructor stub
 		super("3D Flight Map -- Amirali Ghazi, Enzo Hamelin");
@@ -81,38 +82,42 @@ public class MainWindow extends JFrame {
 		init3D();
 
 		createMenu();
-		
-		
+
 		mainPanel = new JPanel(new BorderLayout(1,1), true);
-		
+
 		JPanel searchPane = new JPanel(true);
 		searchPane.setLayout(new BoxLayout(searchPane, BoxLayout.Y_AXIS));
-		
+
 		/* Panel pour les vols de départ */
 		JPanel srcPanel = new JPanel(true);
 		srcPanel.setLayout(new GridBagLayout());
-		
+
 		srcCountryNameField = new ComboBoxAutoComplete<Country>(Country.getCMap().values());
-		
-		srcCityNameField = new ComboBoxAutoComplete<City>();
-		
-		srcAirpNameField = new ComboBoxAutoComplete<Airport>();
-		
+
+		srcCityNameField = new ComboBoxAutoComplete<City>(City.getCityMap().values());
+
+		srcAirpNameField = new ComboBoxAutoComplete<Airport>(Airport.getairportsMap().values());
+
 		//Listener selection des items des combo box
 		srcCountryNameField.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				srcAirpNameField.setItems(null);
-				srcCityNameField.setItems(
-						Filter.filterCitiesByCountry(((Country)(srcCountryNameField.getSelectedItem())).getName()));
+				System.out.println("country select "+ srcCountryNameField.getSelectedItem());
+				if(srcCountryNameField.getSelectedItem() instanceof Country && srcCountryNameField.getSelectedItem() != null)
+					srcCityNameField.setItems(
+							Filter.filterCitiesByCountry(((Country)(srcCountryNameField.getSelectedItem())).getName()));
+				else if(srcCountryNameField.getSelectedItem() == null) {
+					//srcCityNameField.setSelectedItem(null);
+				}
 			}
 		});
 		srcCityNameField.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(srcCityNameField.getSelectedItem() != null) {
+				System.out.println("city select "+srcCityNameField.getSelectedItem()+" "+e.getSource());
+				if(srcCityNameField.getSelectedItem() instanceof City && srcCityNameField.getSelectedItem() != null) {
 					ArrayList<ArrayList<Airport>> airportsByCity = 
 							Filter.filterAirportsByCity(((City)(srcCityNameField.getSelectedItem())).getName());
 					ArrayList<Airport> airports = new ArrayList<Airport>();
@@ -126,49 +131,55 @@ public class MainWindow extends JFrame {
 						}
 					}
 					srcAirpNameField.setItems(airports);
-				}
+				} else if(srcCityNameField.getSelectedItem() == null)
+					srcAirpNameField.setItems(Airport.getairportsMap().values());
+					srcAirpNameField.setSelectedItem(null);
 			}
 		});
-		
-		
+
 		addGridBagItem(srcPanel, new JLabel("Country * :"), 0, 0, 1, 1, GridBagConstraints.EAST);
 		addGridBagItem(srcPanel,new JLabel("City :"), 0, 1, 1, 1, GridBagConstraints.EAST);
 		addGridBagItem(srcPanel, new JLabel("Airport :"), 0, 2, 1, 1, GridBagConstraints.EAST);
-		
+
 		addGridBagItem(srcPanel, srcCountryNameField, 1, 0, 2, 1, GridBagConstraints.WEST);
 		addGridBagItem(srcPanel, srcCityNameField, 1, 1, 2, 1, GridBagConstraints.WEST);
 		addGridBagItem(srcPanel, srcAirpNameField, 1, 2, 2, 1, GridBagConstraints.WEST);
-		
+
 		srcPanel.setBorder(BorderFactory.createTitledBorder("Departure"));
 		searchPane.add(srcPanel);
 		searchPane.add(Box.createVerticalStrut(10));
-		
+
 		/* Panel pour les vols d'arrivée */
 		JPanel dstPanel = new JPanel(true);
 		dstPanel.setLayout(new GridBagLayout());
-		
+
 
 		dstCountryNameField = new ComboBoxAutoComplete<Country>(Country.getCMap().values());
-		
-		dstCityNameField = new ComboBoxAutoComplete<City>();
-		
-		dstAirpNameField = new ComboBoxAutoComplete<Airport>();
-		
+
+		dstCityNameField = new ComboBoxAutoComplete<City>(City.getCityMap().values());
+
+		dstAirpNameField = new ComboBoxAutoComplete<Airport>(Airport.getairportsMap().values());
+
 		//Listener selection des items des combo box
 		dstCountryNameField.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				dstAirpNameField.setItems(null);
-				dstCityNameField.setItems(
-						Filter.filterCitiesByCountry(((Country)(dstCountryNameField.getSelectedItem())).getName()));
+				System.out.println("country select "+ dstCountryNameField.getSelectedItem());
+				if(dstCountryNameField.getSelectedItem() instanceof Country && dstCountryNameField.getSelectedItem() != null)
+					dstCityNameField.setItems(
+							Filter.filterCitiesByCountry(((Country)(dstCountryNameField.getSelectedItem())).getName()));
+				else if(dstCountryNameField.getSelectedItem() == null) {
+					//dstCityNameField.setSelectedItem(null);
+				}
 			}
 		});
 		dstCityNameField.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(dstCityNameField.getSelectedItem() != null) {
+				System.out.println("city select "+dstCityNameField.getSelectedItem());
+				if(dstCityNameField.getSelectedItem() instanceof City && dstCityNameField.getSelectedItem() != null) {
 					ArrayList<ArrayList<Airport>> airportsByCity = 
 							Filter.filterAirportsByCity(((City)(dstCityNameField.getSelectedItem())).getName());
 					ArrayList<Airport> airports = new ArrayList<Airport>();
@@ -182,53 +193,55 @@ public class MainWindow extends JFrame {
 						}
 					}
 					dstAirpNameField.setItems(airports);
-				}
+				} else if(dstCityNameField.getSelectedItem() == null)
+					dstAirpNameField.setItems(Airport.getairportsMap().values());
+					dstAirpNameField.setSelectedItem(null);
 			}
 		});
-		
+
 		addGridBagItem(dstPanel, new JLabel("Country * :"), 0, 0, 1, 1, GridBagConstraints.EAST);
 		addGridBagItem(dstPanel, new JLabel("City :"), 0, 1, 1, 1, GridBagConstraints.EAST);
 		addGridBagItem(dstPanel, new JLabel("Airport :"), 0, 2, 1, 1, GridBagConstraints.EAST);
-		
+
 		addGridBagItem(dstPanel, dstCountryNameField, 1, 0, 2, 1, GridBagConstraints.WEST);
 		addGridBagItem(dstPanel, dstCityNameField, 1, 1, 2, 1, GridBagConstraints.WEST);
 		addGridBagItem(dstPanel, dstAirpNameField, 1, 2, 2, 1, GridBagConstraints.WEST);
-		
+
 		dstPanel.setBorder(BorderFactory.createTitledBorder("Arrival"));
 		searchPane.add(dstPanel);
 
 		JPanel optionsPanel = new JPanel(true);
 		optionsPanel.setLayout(new GridBagLayout());
-		
+
 		airlineNameField = new ComboBoxAutoComplete<>(Airline.getairlinesMap().values());
-		
-//		allAirpCheckBox.setHorizontalTextPosition(SwingUtilities.LEFT);
-		
+
+		//		allAirpCheckBox.setHorizontalTextPosition(SwingUtilities.LEFT);
+
 		addGridBagItem(optionsPanel, new JLabel("Airline :"), 0, 0, 1, 1, GridBagConstraints.EAST);
 		addGridBagItem(optionsPanel, airlineNameField, 1, 0, 2, 1, GridBagConstraints.WEST);
-		
+
 		JPanel  airlOpPanel = new JPanel();
 		airlOpPanel.setLayout(new BoxLayout(airlOpPanel, BoxLayout.Y_AXIS));
-		
+
 		allAirpCheckBox = new JCheckBox("Display all the airports", false);
 		allAirpCheckBox.setAlignmentX(RIGHT_ALIGNMENT);
-//		airlOpPanel.add(allAirpCheckBox, RIGHT_ALIGNMENT);
-		
+		//		airlOpPanel.add(allAirpCheckBox, RIGHT_ALIGNMENT);
+
 		addGridBagItem(optionsPanel, allAirpCheckBox, 2, 2, 2,1, GridBagConstraints.FIRST_LINE_END);
-		
-		
-//		addGridBagItem(optionsPanel, arcOptionPanel, 2, 2, 1, 1, GridBagConstraints.EAST);
-		
-		
+
+
+		//		addGridBagItem(optionsPanel, arcOptionPanel, 2, 2, 1, 1, GridBagConstraints.EAST);
+
+
 		optionsPanel.setBorder(BorderFactory.createTitledBorder("Options"));
-		
+
 		searchPane.add(Box.createVerticalStrut(10));
-//		searchPane.add(optionsPanel);
-		
+		//		searchPane.add(optionsPanel);
+
 		JButton option = new JButton("More...");
-		
+
 		option.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				new OptionDialog(null, true);
@@ -238,10 +251,10 @@ public class MainWindow extends JFrame {
 		addGridBagItem(optionsPanel, option, 2, 3, 1, 1, GridBagConstraints.EAST);
 		searchPane.add(optionsPanel);
 		searchPane.add(Box.createVerticalStrut(2000));
-//		searchPane.setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, Color.BLACK));
+		//		searchPane.setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, Color.BLACK));
 		searchPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 10));
-		
-		
+
+
 		mainPanel.add(searchPane, BorderLayout.WEST);
 		mainPanel.add(canvas, BorderLayout.CENTER);
 		mainPanel.setOpaque(true);
@@ -288,17 +301,17 @@ public class MainWindow extends JFrame {
 	}
 
 	private void addGridBagItem(JPanel p, JComponent c, int x, int y, int width, int height, int align) {
-	    GridBagConstraints gc = new GridBagConstraints();
-	    gc.gridx = x;
-	    gc.gridy = y;
-	    gc.gridwidth = width;
-	    gc.gridheight = height;
-	    gc.weightx = 100.0;
-	    gc.weighty = 100.0;
-	    gc.insets = new Insets(5, 5, 5, 5);
-	    gc.anchor = align;
-	    gc.fill = GridBagConstraints.VERTICAL;
-	    p.add(c, gc);
-	  }
-	
+		GridBagConstraints gc = new GridBagConstraints();
+		gc.gridx = x;
+		gc.gridy = y;
+		gc.gridwidth = width;
+		gc.gridheight = height;
+		gc.weightx = 100.0;
+		gc.weighty = 100.0;
+		gc.insets = new Insets(5, 5, 5, 5);
+		gc.anchor = align;
+		gc.fill = GridBagConstraints.VERTICAL;
+		p.add(c, gc);
+	}
+
 }

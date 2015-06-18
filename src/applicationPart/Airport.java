@@ -292,8 +292,7 @@ public class Airport implements Comparable<Airport> {
 		//				+ "\n\t\taltitude = " + altitude + "\n\t\ttimezone = "
 		//				+ timezone + "\n\t\tDST = " + DST + "\n\t\tTz_timezone = "
 		//				+ Tz_timezone + "\n\t}";
-		return  name
-				+ " --  Ville : " + city + "\t(latitude: " + latitude + ", longitude: " + longitude + ", altitude: " + altitude + ")\n";
+		return  (name != null ? name : "No Name");
 	}
 
 	public static ArrayList<Airport> filterByName(String name) {
