@@ -71,9 +71,9 @@ public class AutoCompletion extends PlainDocument {
         };
         configureEditor(comboBox.getEditor());
         // Handle initially selected object
-        Object selected = comboBox.getSelectedItem();
-        if (selected!=null) setText(selected.toString());
-        highlightCompletedText(0);
+        //Object selected = comboBox.getSelectedItem();
+        //if (selected!=null) setText(selected.toString());
+        //highlightCompletedText(0);
     }
     
     public static void enable(JComboBox comboBox) {

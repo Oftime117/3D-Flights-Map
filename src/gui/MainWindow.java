@@ -94,22 +94,9 @@ public class MainWindow extends JFrame {
 		
 		srcCountryNameField = new ComboBoxAutoComplete<Country>(Country.getCMap().values());
 		
-		srcCityNameField = new ComboBoxAutoComplete<City>(
-				Filter.filterCitiesByCountry(((Country)(srcCountryNameField.getSelectedItem())).getName()));
+		srcCityNameField = new ComboBoxAutoComplete<City>();
 		
-		ArrayList<ArrayList<Airport>> airportsByCity = 
-				Filter.filterAirportsByCity(((City)(srcCityNameField.getSelectedItem())).getName());
-		ArrayList<Airport> airports = new ArrayList<Airport>();
-		Iterator<ArrayList<Airport>> it = airportsByCity.iterator();
-		while(it.hasNext()) {
-			Iterator<Airport> it2 = it.next().iterator();
-			while(it2.hasNext()) {
-				Airport airport = it2.next();
-				if(airport.getCity().equals(srcCityNameField.getSelectedItem()))
-					airports.add(airport);
-			}
-		}
-		srcAirpNameField = new ComboBoxAutoComplete<Airport>(airports);
+		srcAirpNameField = new ComboBoxAutoComplete<Airport>();
 		
 		//Listener selection des items des combo box
 		srcCountryNameField.addActionListener(new ActionListener() {
@@ -163,21 +150,9 @@ public class MainWindow extends JFrame {
 
 		dstCountryNameField = new ComboBoxAutoComplete<Country>(Country.getCMap().values());
 		
-		dstCityNameField = new ComboBoxAutoComplete<City>(
-				Filter.filterCitiesByCountry(((Country)(dstCountryNameField.getSelectedItem())).getName()));
+		dstCityNameField = new ComboBoxAutoComplete<City>();
 		
-		airportsByCity = Filter.filterAirportsByCity(((City)(dstCityNameField.getSelectedItem())).getName());
-		airports = new ArrayList<Airport>();
-		it = airportsByCity.iterator();
-		while(it.hasNext()) {
-			Iterator<Airport> it2 = it.next().iterator();
-			while(it2.hasNext()) {
-				Airport airport = it2.next();
-				if(airport.getCity().equals(dstCityNameField.getSelectedItem()))
-					airports.add(airport);
-			}
-		}
-		dstAirpNameField = new ComboBoxAutoComplete<Airport>(airports);
+		dstAirpNameField = new ComboBoxAutoComplete<Airport>();
 		
 		//Listener selection des items des combo box
 		dstCountryNameField.addActionListener(new ActionListener() {
