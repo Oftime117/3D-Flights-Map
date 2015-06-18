@@ -2,7 +2,6 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Canvas;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -10,21 +9,16 @@ import java.awt.HeadlessException;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.stream.Collectors;
+import java.util.concurrent.Callable;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JColorChooser;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -33,18 +27,17 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingUtilities;
 
+import applicationPart.Airline;
+import applicationPart.Airport;
+import applicationPart.City;
+import applicationPart.Country;
+import applicationPart.Filter;
+
+import com.jme3.math.ColorRGBA;
+import com.jme3.scene.Spatial;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeCanvasContext;
-
-import applicationPart.Airport;
-import applicationPart.Country;
-import applicationPart.City;
-import applicationPart.Airline;
-import applicationPart.Filter;
 
 public class MainWindow extends JFrame {
 
@@ -212,7 +205,14 @@ public class MainWindow extends JFrame {
 		
 		allAirpCheckBox = new JCheckBox("Display all the airports", false);
 		allAirpCheckBox.setAlignmentX(RIGHT_ALIGNMENT);
-//		airlOpPanel.add(allAirpCheckBox, RIGHT_ALIGNMENT);
+		allAirpCheckBox.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if(allAirpCheckBox.isSelected()) test();
+			}
+		});
 		
 		addGridBagItem(optionsPanel, allAirpCheckBox, 2, 2, 2,1, GridBagConstraints.FIRST_LINE_END);
 		
@@ -300,5 +300,18 @@ public class MainWindow extends JFrame {
 	    gc.fill = GridBagConstraints.VERTICAL;
 	    p.add(c, gc);
 	  }
+	
+	private void test() {
+		earth3dMap.enqueue(new Callable<Boolean>() {
+
+			@Override
+			public Boolean call() throws Exception {
+				// TODO Auto-generated method stub
+				earth3dMap.changeAirportsColor(new ColorRGBA(0.1f, 0.1f, 0.1f, 1.0f));
+				return null;
+			}
+			
+		});
+	}
 	
 }

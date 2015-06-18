@@ -134,7 +134,7 @@ public class OptionDialog extends JDialog {
 		
 		airpGenePanel.add(airpGeneSizePanel);
 		
-		airpGenePanel.setBorder(BorderFactory.createTitledBorder("Departing airports options"));
+		airpGenePanel.setBorder(BorderFactory.createTitledBorder("General airports options"));
 		airportsPanel.add(airpGenePanel);	
 		
 		/* Création du panel des arcs des routes */

@@ -101,5 +101,13 @@ public class MainMethod {
 		
 		applicationInit();
 		guiInit();
+		
+//		try {
+//			Thread.sleep(5000);
+//			return;
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 }
