@@ -65,6 +65,7 @@ public class MainWindow extends JFrame {
 	private JCheckBox allAirpCheckBox;
 	JSpinner airpSpinner, arcSpinner;
 
+	int citySet;
 
 	public MainWindow() throws HeadlessException {
 		// TODO Auto-generated constructor stub
@@ -98,17 +99,21 @@ public class MainWindow extends JFrame {
 
 		srcAirpNameField = new ComboBoxAutoComplete<Airport>(Airport.getairportsMap().values());
 
+		citySet = 0;
 		//Listener selection des items des combo box
 		srcCountryNameField.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("country select "+ srcCountryNameField.getSelectedItem());
-				if(srcCountryNameField.getSelectedItem() instanceof Country && srcCountryNameField.getSelectedItem() != null)
+				if(srcCountryNameField.getSelectedItem() instanceof Country && srcCountryNameField.getSelectedItem() != null) {
 					srcCityNameField.setItems(
 							Filter.filterCitiesByCountry(((Country)(srcCountryNameField.getSelectedItem())).getName()));
+					srcCityNameField.setSelectedItem(null);
+				}
 				else if(srcCountryNameField.getSelectedItem() == null) {
-					//srcCityNameField.setSelectedItem(null);
+					srcCityNameField.setItems(City.getCityMap().values());
+					srcCityNameField.setSelectedItem(null);
 				}
 			}
 		});
@@ -116,7 +121,8 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("city select "+srcCityNameField.getSelectedItem()+" "+e.getSource());
+				System.out.println("city select "+srcCityNameField.getSelectedItem()+" "+e.getSource()+" "+citySet);
+
 				if(srcCityNameField.getSelectedItem() instanceof City && srcCityNameField.getSelectedItem() != null) {
 					ArrayList<ArrayList<Airport>> airportsByCity = 
 							Filter.filterAirportsByCity(((City)(srcCityNameField.getSelectedItem())).getName());
@@ -131,6 +137,7 @@ public class MainWindow extends JFrame {
 						}
 					}
 					srcAirpNameField.setItems(airports);
+					srcAirpNameField.setSelectedItem(null);
 				} else if(srcCityNameField.getSelectedItem() == null)
 					srcAirpNameField.setItems(Airport.getairportsMap().values());
 					srcAirpNameField.setSelectedItem(null);
@@ -160,17 +167,21 @@ public class MainWindow extends JFrame {
 
 		dstAirpNameField = new ComboBoxAutoComplete<Airport>(Airport.getairportsMap().values());
 
+		citySet = 0;
 		//Listener selection des items des combo box
 		dstCountryNameField.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("country select "+ dstCountryNameField.getSelectedItem());
-				if(dstCountryNameField.getSelectedItem() instanceof Country && dstCountryNameField.getSelectedItem() != null)
+				if(dstCountryNameField.getSelectedItem() instanceof Country && dstCountryNameField.getSelectedItem() != null) {
 					dstCityNameField.setItems(
 							Filter.filterCitiesByCountry(((Country)(dstCountryNameField.getSelectedItem())).getName()));
+					dstCityNameField.setSelectedItem(null);
+				}
 				else if(dstCountryNameField.getSelectedItem() == null) {
-					//dstCityNameField.setSelectedItem(null);
+					dstCityNameField.setItems(City.getCityMap().values());
+					dstCityNameField.setSelectedItem(null);
 				}
 			}
 		});
@@ -178,7 +189,8 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("city select "+dstCityNameField.getSelectedItem());
+				System.out.println("city select "+dstCityNameField.getSelectedItem()+" "+e.getSource()+" "+citySet);
+
 				if(dstCityNameField.getSelectedItem() instanceof City && dstCityNameField.getSelectedItem() != null) {
 					ArrayList<ArrayList<Airport>> airportsByCity = 
 							Filter.filterAirportsByCity(((City)(dstCityNameField.getSelectedItem())).getName());
@@ -193,6 +205,7 @@ public class MainWindow extends JFrame {
 						}
 					}
 					dstAirpNameField.setItems(airports);
+					dstAirpNameField.setSelectedItem(null);
 				} else if(dstCityNameField.getSelectedItem() == null)
 					dstAirpNameField.setItems(Airport.getairportsMap().values());
 					dstAirpNameField.setSelectedItem(null);
