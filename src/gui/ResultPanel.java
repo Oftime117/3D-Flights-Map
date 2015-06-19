@@ -9,6 +9,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -69,6 +71,8 @@ public class ResultPanel extends JPanel {
 				if(airportName.getSelectedItem() != null) {
 					TableRowSorter<RoutesTableModel> sorter = (TableRowSorter<RoutesTableModel>) routes.getRowSorter();
 					sorter.setRowFilter(RowFilter.regexFilter(airportName.getSelectedItem().toString(), 0, 1));
+					countryName.setSelectedItem(null);
+					cityName.setSelectedItem(null);
 				}
 				
 			}
@@ -80,6 +84,8 @@ public class ResultPanel extends JPanel {
 				if(countryName.getSelectedItem() != null) {
 					TableRowSorter<RoutesTableModel> sorter = (TableRowSorter<RoutesTableModel>) routes.getRowSorter();
 					sorter.setRowFilter(RowFilter.regexFilter(countryName.getSelectedItem().toString(), 3, 5));
+					airportName.setSelectedItem(null);
+					cityName.setSelectedItem(null);
 				}
 				
 			}
@@ -91,6 +97,8 @@ public class ResultPanel extends JPanel {
 				if(cityName.getSelectedItem() != null) {
 					TableRowSorter<RoutesTableModel> sorter = (TableRowSorter<RoutesTableModel>) routes.getRowSorter();
 					sorter.setRowFilter(RowFilter.regexFilter(cityName.getSelectedItem().toString(), 4, 6));
+					airportName.setSelectedItem(null);
+					countryName.setSelectedItem(null);
 				}
 				
 			}
@@ -98,6 +106,42 @@ public class ResultPanel extends JPanel {
 		
 		routes = new JTable();
 		routes.setAutoCreateRowSorter(true);
+		
+		
+		routes.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(e.getClickCount() == 2) {
+					Route route = ((RoutesTableModel)(routes.getModel())).getRouteAt(routes.getSelectedRow());
+					System.out.println(route);
+				}
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		
 	    add(Box.createVerticalStrut(10));
 		add(countryName);
