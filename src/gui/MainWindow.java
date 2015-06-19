@@ -2,7 +2,6 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Canvas;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -14,7 +13,6 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.Callable;
-import java.util.function.BiFunction;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -35,8 +33,8 @@ import applicationPart.Airport;
 import applicationPart.City;
 import applicationPart.Country;
 import applicationPart.Filter;
+import applicationPart.Route;
 
-import com.jme3.math.ColorRGBA;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeCanvasContext;
 
@@ -237,35 +235,34 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				//if(allAirpCheckBox.isSelected()) test();
+				if(allAirpCheckBox.isSelected()) {
+					earth3dMap.enqueue(new Callable<Boolean>() {
+
+						@Override
+						public Boolean call() throws Exception {
+							earth3dMap.displayAllGeneralAirports();
+							return true;
+						}
+
+					});
+				}
+				else {
+					earth3dMap.enqueue(new Callable<Boolean>() {
+
+						@Override
+						public Boolean call() throws Exception {
+							earth3dMap.hideAllGeneralAirports();
+							return true;
+						}
+					});
+				}
 			}
 		});
 		
 		addGridBagItem(optionsPanel, activeAirlinesCheckBox, 2, 2, 1, 1, GridBagConstraints.FIRST_LINE_END);
 		addGridBagItem(optionsPanel, allAirpCheckBox, 2, 3, 2, 1, GridBagConstraints.FIRST_LINE_END);
 
-		if(allAirpCheckBox.isSelected()) {
-			earth3dMap.enqueue(new Callable<Boolean>() {
-
-				@Override
-				public Boolean call() throws Exception {
-					earth3dMap.displayAllGeneralAirports();
-					return true;
-				}
-
-			});
-		}
-		else {
-			earth3dMap.enqueue(new Callable<Boolean>() {
-
-				@Override
-				public Boolean call() throws Exception {
-					earth3dMap.hideAllGeneralAirports();
-					return true;
-				}
-			});
-		}
+		
 
 		optionsPanel.setBorder(BorderFactory.createTitledBorder("Options"));
 
@@ -296,39 +293,60 @@ public class MainWindow extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String airlineName = null;
+				ArrayList<ArrayList<Route>> buffRoute = new ArrayList<ArrayList<Route>>();
+				
 				if(airlineNameField.getSelectedItem() != null && airlineNameField.getSelectedItem() instanceof Airline)
 					airlineName = ((Airline)(airlineNameField.getSelectedItem())).getName();
 				if(srcAirpNameField.getSelectedItem() != null && dstAirpNameField.getSelectedItem() != null) {
 					String srcAirpName = ((Airport)(srcAirpNameField.getSelectedItem())).getName();
 					String dstAirpName = ((Airport)(dstAirpNameField.getSelectedItem())).getName();
-					resultsPane.setTableDataDouble(Filter.filterByDirectAirpToAirp2(srcAirpName, dstAirpName, airlineName, activeAirlinesCheckBox.isSelected()));
+					buffRoute.addAll(Filter.filterByDirectAirpToAirp2(srcAirpName, dstAirpName, airlineName, activeAirlinesCheckBox.isSelected()));
+					
 				} else if(srcAirpNameField.getSelectedItem() != null && dstAirpNameField.getSelectedItem() == null) {
 					String srcAirpName = ((Airport)(srcAirpNameField.getSelectedItem())).getName();
-					resultsPane.setTableData(Filter.filterByPlaceAndAirline2("from", srcAirpName, "airport", airlineName, activeAirlinesCheckBox.isSelected()));
+					buffRoute.add(Filter.filterByPlaceAndAirline2("from", srcAirpName, "airport", airlineName, activeAirlinesCheckBox.isSelected()));
+					
 				} else if(srcAirpNameField.getSelectedItem() == null && dstAirpNameField.getSelectedItem() != null) {
-					String dstAirpName = ((Airport)(dstAirpNameField.getSelectedItem())).getName();	
-					resultsPane.setTableData(Filter.filterByPlaceAndAirline2("to", dstAirpName, "airport", airlineName, activeAirlinesCheckBox.isSelected()));
+					String dstAirpName = ((Airport)(dstAirpNameField.getSelectedItem())).getName();
+					buffRoute.add(Filter.filterByPlaceAndAirline2("to", dstAirpName, "airport", airlineName, activeAirlinesCheckBox.isSelected()));
+					
 				} else if(srcCityNameField.getSelectedItem() != null && dstCityNameField.getSelectedItem() != null) {
 					String srcCityName = ((City)(srcCityNameField.getSelectedItem())).getName();
 					String dstCityName = ((City)(dstCityNameField.getSelectedItem())).getName();
-					resultsPane.setTableDataDouble(Filter.filterByDirectCityToCity2(srcCityName, dstCityName, airlineName, activeAirlinesCheckBox.isSelected()));
+					buffRoute.addAll(Filter.filterByDirectCityToCity2(srcCityName, dstCityName, airlineName, activeAirlinesCheckBox.isSelected()));
+					
 				} else if(srcCityNameField.getSelectedItem() != null && dstCityNameField.getSelectedItem() == null) {
 					String srcCityName = ((City)(srcCityNameField.getSelectedItem())).getName();
-					resultsPane.setTableData(Filter.filterByPlaceAndAirline2("from", srcCityName, "city", airlineName, activeAirlinesCheckBox.isSelected()));
+					buffRoute.add(Filter.filterByPlaceAndAirline2("from", srcCityName, "city", airlineName, activeAirlinesCheckBox.isSelected()));
+					
 				} else if(srcCityNameField.getSelectedItem() == null && dstCityNameField.getSelectedItem() != null) {
 					String dstCityName = ((City)(dstCityNameField.getSelectedItem())).getName();
-					resultsPane.setTableData(Filter.filterByPlaceAndAirline2("to", dstCityName, "city", airlineName, activeAirlinesCheckBox.isSelected()));
+					buffRoute.add(Filter.filterByPlaceAndAirline2("to", dstCityName, "city", airlineName, activeAirlinesCheckBox.isSelected()));
+					
 				}  else if(srcCountryNameField.getSelectedItem() != null && dstCountryNameField.getSelectedItem() != null) {
 					String srcCountryName = ((Country)(srcCountryNameField.getSelectedItem())).getName();
 					String dstCountryName = ((Country)(dstCountryNameField.getSelectedItem())).getName();
-					resultsPane.setTableDataDouble(Filter.filterByDirectCountryToCountry2(srcCountryName, dstCountryName, airlineName, activeAirlinesCheckBox.isSelected()));
+					buffRoute.addAll(Filter.filterByDirectCountryToCountry2(srcCountryName, dstCountryName, airlineName, activeAirlinesCheckBox.isSelected()));
+					
 				} else if(srcCountryNameField.getSelectedItem() != null && dstCountryNameField.getSelectedItem() == null) {
 					String srcCountryName = ((Country)(srcCountryNameField.getSelectedItem())).getName();
-					resultsPane.setTableData(Filter.filterByPlaceAndAirline2("from", srcCountryName, "country", airlineName, activeAirlinesCheckBox.isSelected()));
+					buffRoute.add(Filter.filterByPlaceAndAirline2("from", srcCountryName, "country", airlineName, activeAirlinesCheckBox.isSelected()));
+				
 				} else if(srcCountryNameField.getSelectedItem() == null && dstCountryNameField.getSelectedItem() != null) {
 					String dstCountryName = ((Country)(dstCountryNameField.getSelectedItem())).getName();
-					resultsPane.setTableData(Filter.filterByPlaceAndAirline2("to", dstCountryName, "country", airlineName, activeAirlinesCheckBox.isSelected()));
-				} 	
+					buffRoute.add(Filter.filterByPlaceAndAirline2("to", dstCountryName, "country", airlineName, activeAirlinesCheckBox.isSelected()));
+				}
+				resultsPane.setTableDataDouble(buffRoute);
+				
+				earth3dMap.enqueue(new Callable<Boolean>() {
+
+					@Override
+					public Boolean call() throws Exception {
+//						earth3dMap.resetOverlay();
+						earth3dMap.displayRoutes(buffRoute);
+						return true;
+					}
+				});
 			}
 		});
 		JButton reset = new JButton("Reset");
@@ -348,6 +366,15 @@ public class MainWindow extends JFrame {
 				dstAirpNameField.setSelectedItem(null);
 				airlineNameField.setItems(Airline.getairlinesMap().values());
 				airlineNameField.setSelectedItem(null);
+				
+				earth3dMap.enqueue(new Callable<Boolean>() {
+
+					@Override
+					public Boolean call() throws Exception {
+						earth3dMap.resetOverlay();
+						return true;
+					}
+				});
 			}
 		});
 		
@@ -406,7 +433,7 @@ public class MainWindow extends JFrame {
 		setJMenuBar(menubar);
 	}
 
-	private void addGridBagItem(JPanel p, JComponent c, int x, int y, int width, int height, int align) {
+	public static void addGridBagItem(JPanel p, JComponent c, int x, int y, int width, int height, int align) {
 		GridBagConstraints gc = new GridBagConstraints();
 		gc.gridx = x;
 		gc.gridy = y;

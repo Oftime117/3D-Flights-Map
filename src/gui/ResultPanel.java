@@ -78,10 +78,15 @@ public class ResultPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(countryName.getSelectedItem() != null) {
+					
+					Country buffCountry = (Country) countryName.getSelectedItem();
+					cityName.removeAll();
+					buffCountry.getCCMap().values().forEach(city -> cityName.addItem(city));
+					cityName.setSelectedItem(null);
 					TableRowSorter<RoutesTableModel> sorter = (TableRowSorter<RoutesTableModel>) routes.getRowSorter();
 					sorter.setRowFilter(RowFilter.regexFilter(countryName.getSelectedItem().toString(), 3, 5));
+					
 				}
-				
 			}
 		});
 		cityName.addActionListener(new ActionListener() {
@@ -91,6 +96,11 @@ public class ResultPanel extends JPanel {
 				if(cityName.getSelectedItem() != null) {
 					TableRowSorter<RoutesTableModel> sorter = (TableRowSorter<RoutesTableModel>) routes.getRowSorter();
 					sorter.setRowFilter(RowFilter.regexFilter(cityName.getSelectedItem().toString(), 4, 6));
+					
+//					City buffCity = (City) cityName.getSelectedItem();
+//					cityName.removeAll();
+//					buffCity.getCityAirportMap().values().forEach(airport -> airportName.addItem(airport));
+//					airportName.setSelectedItem(null);
 				}
 				
 			}
@@ -148,31 +158,56 @@ public class ResultPanel extends JPanel {
 	
 	private void updateField(RoutesTableModel model) {
 		int rows = model.getRowCount();
+		Country buffCountry;
 		countryName.removeAll();
 		cityName.removeAll();
 		airportName.removeAll();
 		for(int i=0; i<rows; i++) {
-			if(((DefaultComboBoxModel<Airport>)airportName.getModel()).getIndexOf(model.getRouteAt(i).getSrcAirport()) == -1 ) {
-				airportName.addItem(model.getRouteAt(i).getSrcAirport());
-			}
-			if(((DefaultComboBoxModel<Airport>)airportName.getModel()).getIndexOf(model.getRouteAt(i).getDstAirport()) == -1 ) {
-				airportName.addItem(model.getRouteAt(i).getDstAirport());
-			}
-			airportName.setSelectedItem(null);
+//			if(((DefaultComboBoxModel<Airport>)airportName.getModel()).getIndexOf(model.getRouteAt(i).getSrcAirport()) == -1 ) {
+//				airportName.addItem(model.getRouteAt(i).getSrcAirport());
+//			}
+//			if(((DefaultComboBoxModel<Airport>)airportName.getModel()).getIndexOf(model.getRouteAt(i).getDstAirport()) == -1 ) {
+//				airportName.addItem(model.getRouteAt(i).getDstAirport());
+//			}
+//			airportName.setSelectedItem(null);
+//			if(((DefaultComboBoxModel<Country>)countryName.getModel()).getIndexOf(model.getRouteAt(i).getSrcAirport().getCountry()) == -1 ) {
+//				countryName.addItem(model.getRouteAt(i).getSrcAirport().getCountry());
+//			}
+//			if(((DefaultComboBoxModel<Country>)countryName.getModel()).getIndexOf(model.getRouteAt(i).getDstAirport().getCountry()) == -1 ) {
+//				countryName.addItem(model.getRouteAt(i).getDstAirport().getCountry());
+//			}
+//			countryName.setSelectedItem(null);
+//			if(((DefaultComboBoxModel<City>)cityName.getModel()).getIndexOf(model.getRouteAt(i).getSrcAirport().getCity()) == -1 ) {
+//				cityName.addItem(model.getRouteAt(i).getSrcAirport().getCity());
+//			}
+//			if(((DefaultComboBoxModel<City>)cityName.getModel()).getIndexOf(model.getRouteAt(i).getDstAirport().getCity()) == -1 ) {
+//				cityName.addItem(model.getRouteAt(i).getDstAirport().getCity());
+//			}
+//			cityName.setSelectedItem(null);
+			
 			if(((DefaultComboBoxModel<Country>)countryName.getModel()).getIndexOf(model.getRouteAt(i).getSrcAirport().getCountry()) == -1 ) {
-				countryName.addItem(model.getRouteAt(i).getSrcAirport().getCountry());
+				buffCountry = model.getRouteAt(i).getSrcAirport().getCountry();
+				countryName.addItem(buffCountry);
+				
+//				buffCountry.getCCMap().values().forEach(city -> {
+//					cityName.addItem(city);
+//					city.getCityAirportMap().values().forEach(airport -> airportName.addItem(airport));
+//				});
+				
 			}
 			if(((DefaultComboBoxModel<Country>)countryName.getModel()).getIndexOf(model.getRouteAt(i).getDstAirport().getCountry()) == -1 ) {
-				countryName.addItem(model.getRouteAt(i).getDstAirport().getCountry());
+				buffCountry = model.getRouteAt(i).getDstAirport().getCountry();
+				countryName.addItem(buffCountry);
+				
+//				buffCountry.getCCMap().values().forEach(city -> {
+//					cityName.addItem(city);
+//					city.getCityAirportMap().values().forEach(airport -> airportName.addItem(airport));
+//				});
 			}
 			countryName.setSelectedItem(null);
-			if(((DefaultComboBoxModel<City>)cityName.getModel()).getIndexOf(model.getRouteAt(i).getSrcAirport().getCity()) == -1 ) {
-				cityName.addItem(model.getRouteAt(i).getSrcAirport().getCity());
-			}
-			if(((DefaultComboBoxModel<City>)cityName.getModel()).getIndexOf(model.getRouteAt(i).getDstAirport().getCity()) == -1 ) {
-				cityName.addItem(model.getRouteAt(i).getDstAirport().getCity());
-			}
 			cityName.setSelectedItem(null);
+			airportName.setSelectedItem(null);
+			
 		}
 	}
 }

@@ -79,17 +79,17 @@ public class Earth3DMap extends SimpleApplication {
 
 		/* Initialisation de la caméra */
 		camInit();
-
-		buff.stream().distinct()
-		.forEach(array -> array.stream()
-				.distinct()
-				.forEach(route -> {
-					displayArc(route.getSrcAirport().getLatitude(), 
-							route.getSrcAirport().getLongitude(),  
-							route.getDstAirport().getLatitude(), 
-							route.getDstAirport().getLongitude());
-
-				}));
+//
+//		buff.stream().distinct()
+//		.forEach(array -> array.stream()
+//				.distinct()
+//				.forEach(route -> {
+//					displayArc(route.getSrcAirport().getLatitude(), 
+//							route.getSrcAirport().getLongitude(),  
+//							route.getDstAirport().getLatitude(), 
+//							route.getDstAirport().getLongitude());
+//
+//				}));
 
 		/* Optimisation du noeud générique */
 		GeometryBatchFactory.optimize(geneAirportsNode);
@@ -133,6 +133,7 @@ public class Earth3DMap extends SimpleApplication {
 	 * @param routeArray la liste à afficher
 	 */
 	public void displayRoutes(ArrayList<ArrayList<Route>> routeArray) {
+		System.out.println("psjerzpùsjspf");
 		routeArray.stream().distinct().filter(array -> !array.isEmpty())
 		.forEach(array -> array.stream().distinct()
 				.forEach(route -> displayArc(route
@@ -141,6 +142,17 @@ public class Earth3DMap extends SimpleApplication {
 						route.getSrcAirport().getLongitude(),  
 						route.getDstAirport().getLatitude(), 
 						route.getDstAirport().getLongitude())));
+//		routeArray = Filter.filterRoutesFromAirport2("Charles de Gaulle");
+//		routeArray.forEach(array -> {
+//			array.forEach(route ->  {
+//				displayArc(route.getSrcAirport()
+//						.getLatitude(), 
+//						route.getSrcAirport().getLongitude(),  
+//						route.getDstAirport().getLatitude(), 
+//						route.getDstAirport().getLongitude());
+//				System.out.println("sdofsofsfjoispù pfj");
+//			});
+//		});
 	}
 
 	/* Retire les trajet de la scène */
