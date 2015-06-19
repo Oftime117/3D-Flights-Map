@@ -127,7 +127,7 @@ public class Earth3DMap extends SimpleApplication {
 	public void changeAirportsColor(ColorRGBA airportColor) {
 		Material airpMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
 		airpMat.setColor("Color", airportColor);
-//		airportsNode.getChildren().forEach(spatial -> spatial.setMaterial(airpMat));
+		airportsNode.getChildren().forEach(spatial -> spatial.setMaterial(airpMat));
 //		airportsNode.detachAllChildren();
 		
 		if(airportsNode.getChildren().isEmpty()) 

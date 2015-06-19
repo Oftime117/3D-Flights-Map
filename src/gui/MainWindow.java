@@ -56,7 +56,7 @@ public class MainWindow extends JFrame {
 	private ComboBoxAutoComplete<City> srcCityNameField, dstCityNameField;
 	private ComboBoxAutoComplete<Country>srcCountryNameField, dstCountryNameField;
 	private ComboBoxAutoComplete<Airline> airlineNameField;
-	private JCheckBox allAirpCheckBox;
+	private JCheckBox allAirpCheckBox, activeAirlinesCheckBox;
 	JSpinner airpSpinner, arcSpinner;
 
 
@@ -98,9 +98,6 @@ public class MainWindow extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				if(srcCountryNameField.getSelectedItem() instanceof Country && srcCountryNameField.getSelectedItem() != null)
-
-				System.out.println("country select "+ srcCountryNameField.getSelectedItem());
 				if(srcCountryNameField.getSelectedItem() instanceof Country && srcCountryNameField.getSelectedItem() != null) {
 
 					srcCityNameField.setItems(
@@ -229,6 +226,10 @@ public class MainWindow extends JFrame {
 		JPanel  airlOpPanel = new JPanel();
 		airlOpPanel.setLayout(new BoxLayout(airlOpPanel, BoxLayout.Y_AXIS));
 
+		activeAirlinesCheckBox = new JCheckBox("Display only actives airlines", true);
+		activeAirlinesCheckBox.setAlignmentX(RIGHT_ALIGNMENT);
+
+		
 		allAirpCheckBox = new JCheckBox("Display all the airports", false);
 		allAirpCheckBox.setAlignmentX(RIGHT_ALIGNMENT);
 
@@ -241,8 +242,8 @@ public class MainWindow extends JFrame {
 			}
 		});
 		
-
-		addGridBagItem(optionsPanel, allAirpCheckBox, 2, 2, 2,1, GridBagConstraints.FIRST_LINE_END);
+		addGridBagItem(optionsPanel, activeAirlinesCheckBox, 2, 2, 1, 1, GridBagConstraints.FIRST_LINE_END);
+		addGridBagItem(optionsPanel, allAirpCheckBox, 2, 3, 2, 1, GridBagConstraints.FIRST_LINE_END);
 
 
 		//		addGridBagItem(optionsPanel, arcOptionPanel, 2, 2, 1, 1, GridBagConstraints.EAST);
@@ -263,20 +264,54 @@ public class MainWindow extends JFrame {
 			}
 		});
 		airlOpPanel.add(option);
-		addGridBagItem(optionsPanel, option, 2, 3, 1, 1, GridBagConstraints.EAST);
+		addGridBagItem(optionsPanel, option, 2, 4, 1, 1, GridBagConstraints.EAST);
 		searchPane.add(optionsPanel);
 		
 		Box searchRoutesPanel = Box.createHorizontalBox();
 		//searchRoutesPanel.setLayout(new BoxLayout(searchRoutesPanel, BoxLayout.X_AXIS));
 		//searchRoutesPanel.setAlignmentX(RIGHT_ALIGNMENT);
 		
+		ResultPanel resultsPane = new ResultPanel(getContentPane());
+		
 		JButton search = new JButton("Search");
 		search.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-				
+				String airlineName = null;
+				if(airlineNameField.getSelectedItem() != null && airlineNameField.getSelectedItem() instanceof Airline)
+					airlineName = ((Airline)(airlineNameField.getSelectedItem())).getName();
+				if(srcAirpNameField.getSelectedItem() != null && dstAirpNameField.getSelectedItem() != null) {
+					String srcAirpName = ((Airport)(srcAirpNameField.getSelectedItem())).getName();
+					String dstAirpName = ((Airport)(dstAirpNameField.getSelectedItem())).getName();
+					resultsPane.setTableDataDouble(Filter.filterByDirectAirpToAirp2(srcAirpName, dstAirpName, airlineName, activeAirlinesCheckBox.isSelected()));
+				} else if(srcAirpNameField.getSelectedItem() != null && dstAirpNameField.getSelectedItem() == null) {
+					String srcAirpName = ((Airport)(srcAirpNameField.getSelectedItem())).getName();
+					resultsPane.setTableData(Filter.filterByPlaceAndAirline2("from", srcAirpName, "airport", airlineName, activeAirlinesCheckBox.isSelected()));
+				} else if(srcAirpNameField.getSelectedItem() == null && dstAirpNameField.getSelectedItem() != null) {
+					String dstAirpName = ((Airport)(dstAirpNameField.getSelectedItem())).getName();	
+					resultsPane.setTableData(Filter.filterByPlaceAndAirline2("to", dstAirpName, "airport", airlineName, activeAirlinesCheckBox.isSelected()));
+				} else if(srcCityNameField.getSelectedItem() != null && dstCityNameField.getSelectedItem() != null) {
+					String srcCityName = ((City)(srcCityNameField.getSelectedItem())).getName();
+					String dstCityName = ((City)(dstCityNameField.getSelectedItem())).getName();
+					resultsPane.setTableDataDouble(Filter.filterByDirectCityToCity2(srcCityName, dstCityName, airlineName, activeAirlinesCheckBox.isSelected()));
+				} else if(srcCityNameField.getSelectedItem() != null && dstCityNameField.getSelectedItem() == null) {
+					String srcCityName = ((City)(srcCityNameField.getSelectedItem())).getName();
+					resultsPane.setTableData(Filter.filterByPlaceAndAirline2("from", srcCityName, "city", airlineName, activeAirlinesCheckBox.isSelected()));
+				} else if(srcCityNameField.getSelectedItem() == null && dstCityNameField.getSelectedItem() != null) {
+					String dstCityName = ((City)(dstCityNameField.getSelectedItem())).getName();
+					resultsPane.setTableData(Filter.filterByPlaceAndAirline2("to", dstCityName, "city", airlineName, activeAirlinesCheckBox.isSelected()));
+				}  else if(srcCountryNameField.getSelectedItem() != null && dstCountryNameField.getSelectedItem() != null) {
+					String srcCountryName = ((Country)(srcCountryNameField.getSelectedItem())).getName();
+					String dstCountryName = ((Country)(dstCountryNameField.getSelectedItem())).getName();
+					resultsPane.setTableDataDouble(Filter.filterByDirectCountryToCountry2(srcCountryName, dstCountryName, airlineName, activeAirlinesCheckBox.isSelected()));
+				} else if(srcCountryNameField.getSelectedItem() != null && dstCountryNameField.getSelectedItem() == null) {
+					String srcCountryName = ((Country)(srcCountryNameField.getSelectedItem())).getName();
+					resultsPane.setTableData(Filter.filterByPlaceAndAirline2("from", srcCountryName, "country", airlineName, activeAirlinesCheckBox.isSelected()));
+				} else if(srcCountryNameField.getSelectedItem() == null && dstCountryNameField.getSelectedItem() != null) {
+					String dstCountryName = ((Country)(dstCountryNameField.getSelectedItem())).getName();
+					resultsPane.setTableData(Filter.filterByPlaceAndAirline2("to", dstCountryName, "country", airlineName, activeAirlinesCheckBox.isSelected()));
+				} 	
 			}
 		});
 		JButton reset = new JButton("Reset");
@@ -308,8 +343,6 @@ public class MainWindow extends JFrame {
 		searchPane.add(Box.createVerticalStrut(2000));
 		//		searchPane.setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, Color.BLACK));
 		searchPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 10));
-		
-		ResultPanel resultsPane = new ResultPanel(getContentPane());
 		
 		mainPanel.add(searchPane, BorderLayout.WEST);
 		mainPanel.add(canvas, BorderLayout.CENTER);

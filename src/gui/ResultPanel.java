@@ -4,23 +4,40 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.RowFilter;
 import javax.swing.border.Border;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableRowSorter;
 
 import applicationPart.Airport;
 import applicationPart.City;
 import applicationPart.Country;
+import applicationPart.Filter;
 import applicationPart.Route;
+import applicationPart.RoutesTableModel;
 
 public class ResultPanel extends JPanel {
 
@@ -37,19 +54,64 @@ public class ResultPanel extends JPanel {
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setBorder(BorderFactory.createTitledBorder("Results"));
-		setPreferredSize(new Dimension(300, getPreferredSize().height));
+		setPreferredSize(new Dimension(800, getPreferredSize().height));
 		
 		countryName = new JComboBox<Country>();
 		cityName = new JComboBox<City>();
 		airportName = new JComboBox<Airport>();
+		countryName.setMaximumSize(new Dimension(200, getMinimumSize().height));
+		cityName.setMaximumSize(new Dimension(200, getMinimumSize().height));
+		airportName.setMaximumSize(new Dimension(200, getMinimumSize().height));
+		airportName.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(airportName.getSelectedItem() != null) {
+					TableRowSorter<RoutesTableModel> sorter = (TableRowSorter<RoutesTableModel>) routes.getRowSorter();
+					sorter.setRowFilter(RowFilter.regexFilter(airportName.getSelectedItem().toString(), 0, 1));
+				}
+				
+			}
+		});
+		countryName.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(countryName.getSelectedItem() != null) {
+					TableRowSorter<RoutesTableModel> sorter = (TableRowSorter<RoutesTableModel>) routes.getRowSorter();
+					sorter.setRowFilter(RowFilter.regexFilter(countryName.getSelectedItem().toString(), 3, 5));
+				}
+				
+			}
+		});
+		cityName.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(cityName.getSelectedItem() != null) {
+					TableRowSorter<RoutesTableModel> sorter = (TableRowSorter<RoutesTableModel>) routes.getRowSorter();
+					sorter.setRowFilter(RowFilter.regexFilter(cityName.getSelectedItem().toString(), 4, 6));
+				}
+				
+			}
+		});
 		
 		routes = new JTable();
+		routes.setAutoCreateRowSorter(true);
 		
+	    add(Box.createVerticalStrut(10));
 		add(countryName);
+		add(Box.createVerticalStrut(10));
 		add(cityName);
+		add(Box.createVerticalStrut(10));
 		add(airportName);
+		add(Box.createVerticalStrut(10));
 		
-		add(routes);
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setViewportView(routes);
+		scrollPane.setMinimumSize(new Dimension(this.getWidth(), 700));
+		scrollPane.setPreferredSize(new Dimension(this.getWidth(), 1000));
+		add(scrollPane);
 		
 		Box hideBox = Box.createHorizontalBox();
 		
@@ -70,4 +132,47 @@ public class ResultPanel extends JPanel {
 		add(Box.createVerticalStrut(2000));
 	}
 	
+	public void setTableDataDouble(ArrayList<ArrayList<Route>> routes) {
+		RoutesTableModel model = new RoutesTableModel();
+		model.fromDoubleAray(routes);
+		updateField(model);
+		System.out.println(this.routes.getColumnModel().getColumnCount());
+		this.routes.setModel(model);
+	}
+	
+	public void setTableData(ArrayList<Route> routes) {
+		RoutesTableModel model = new RoutesTableModel(routes);
+		updateField(model);
+		this.routes.setModel(model);
+	}
+	
+	private void updateField(RoutesTableModel model) {
+		int rows = model.getRowCount();
+		countryName.removeAll();
+		cityName.removeAll();
+		airportName.removeAll();
+		for(int i=0; i<rows; i++) {
+			if(((DefaultComboBoxModel<Airport>)airportName.getModel()).getIndexOf(model.getRouteAt(i).getSrcAirport()) == -1 ) {
+				airportName.addItem(model.getRouteAt(i).getSrcAirport());
+			}
+			if(((DefaultComboBoxModel<Airport>)airportName.getModel()).getIndexOf(model.getRouteAt(i).getDstAirport()) == -1 ) {
+				airportName.addItem(model.getRouteAt(i).getDstAirport());
+			}
+			airportName.setSelectedItem(null);
+			if(((DefaultComboBoxModel<Country>)countryName.getModel()).getIndexOf(model.getRouteAt(i).getSrcAirport().getCountry()) == -1 ) {
+				countryName.addItem(model.getRouteAt(i).getSrcAirport().getCountry());
+			}
+			if(((DefaultComboBoxModel<Country>)countryName.getModel()).getIndexOf(model.getRouteAt(i).getDstAirport().getCountry()) == -1 ) {
+				countryName.addItem(model.getRouteAt(i).getDstAirport().getCountry());
+			}
+			countryName.setSelectedItem(null);
+			if(((DefaultComboBoxModel<City>)cityName.getModel()).getIndexOf(model.getRouteAt(i).getSrcAirport().getCity()) == -1 ) {
+				cityName.addItem(model.getRouteAt(i).getSrcAirport().getCity());
+			}
+			if(((DefaultComboBoxModel<City>)cityName.getModel()).getIndexOf(model.getRouteAt(i).getDstAirport().getCity()) == -1 ) {
+				cityName.addItem(model.getRouteAt(i).getDstAirport().getCity());
+			}
+			cityName.setSelectedItem(null);
+		}
+	}
 }

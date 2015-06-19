@@ -87,18 +87,26 @@ public final class Filter {
 	}
 
 	public static ArrayList<Route> filterRoutesByAirline(String name, boolean activeOnly) {
+		ArrayList<Route> routes;
 		if(activeOnly)
-			return Route.getRoutesList().stream()
-					.distinct()
-					.filter(route -> route.getAirline().getActive().equals("Y"))
+			routes = Route.getRoutesList().stream()
+			.distinct()
+			.filter(route -> route.getAirline().getActive().equals("Y"))
 					.sorted()
 					.collect(Collectors.toCollection(ArrayList::new));
-
-		return Route.getRoutesList().stream()
+			else
+				routes =  Route.getRoutesList().stream()
 				.distinct()
-				.filter(route -> route.getAirline().getName().toLowerCase().startsWith(name.toLowerCase()))
+				.filter(route -> route.getAirline() != null)
 				.sorted()
 				.collect(Collectors.toCollection(ArrayList::new));
+			if(name != null)
+				routes = routes.stream().filter(route -> route.getAirline()
+						.getName()
+						.toLowerCase()
+						.startsWith(name.toLowerCase()))
+						.collect(Collectors.toCollection(ArrayList::new));
+			return routes;
 	}
 
 	public static ArrayList<ArrayList<Route>> filterRoutesFromAirport2(String name) {
@@ -132,6 +140,7 @@ public final class Filter {
 				.values()
 				.stream()
 				.distinct()
+				.filter(array -> !array.isEmpty())
 				.sorted((array1, array2) -> array1.get(0).getSrcAirport().getName().compareToIgnoreCase(array2.get(0).getSrcAirport().getName()))
 				.collect(Collectors.toCollection(ArrayList::new))));
 
