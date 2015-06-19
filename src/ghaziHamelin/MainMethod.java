@@ -68,6 +68,7 @@ public class MainMethod {
 //		City.filterByName("Paris").forEach(System.out::println);
 //		System.out.println(Filter.filterRoutesToAirport2("Charles de Gaulle").stream().distinct().count());
 //		Filter.filterAirportByCountry("France").forEach(System.out::println);
+//		Filter.filterRoutesByAirline("Air France", true).forEach(System.out::println);;
 		System.out.println(-deb + clock.millis());
 		
 	}

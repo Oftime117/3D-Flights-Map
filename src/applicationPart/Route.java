@@ -261,8 +261,8 @@ public class Route implements Comparable<Route>{
 
 			Route buffRoute = new Route(airline, srcAirport, dstAirport, codeshare, stops, equipment);
 
-			dstAirport.getRoutesFromList().add(buffRoute);
-			srcAirport.getRoutesToList().add(buffRoute);
+//			dstAirport.getRoutesFromList().add(buffRoute);
+//			srcAirport.getRoutesToList().add(buffRoute);
 			
 			srcAirport.getGroupedRoutesFromMap().computeIfAbsent(dstAirport.getName()
 					+srcAirport.getCity().getName()

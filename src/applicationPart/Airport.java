@@ -31,6 +31,10 @@ public class Airport implements Comparable<Airport> {
 	private ArrayList<Route> routesToList;
 	private ArrayList<Route> routesFromList;
 
+	/* Lists contenant la liste des routes de et jusqu'ici
+	 * rangé par ordre alphabétiques (chaque arraylist contient les 
+	 * routes allant/venant du même airport
+	 */
 	private ConcurrentHashMap<String, ArrayList<Route>> groupedRoutesToMap;
 	private ConcurrentHashMap<String, ArrayList<Route>> groupedRoutesFromMap;
 	
