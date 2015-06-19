@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -13,8 +14,7 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.Callable;
-
-import java.util.stream.Collectors;
+import java.util.function.BiFunction;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -37,7 +37,6 @@ import applicationPart.Country;
 import applicationPart.Filter;
 
 import com.jme3.math.ColorRGBA;
-import com.jme3.scene.Spatial;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeCanvasContext;
 
@@ -67,8 +66,6 @@ public class MainWindow extends JFrame {
 		addWindowListener(new java.awt.event.WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent e) {
-				// TODO : Uncomment this in order to stop the application
-				// when the windows will be closed.
 				earth3dMap.stop();
 			}
 		});
@@ -132,7 +129,7 @@ public class MainWindow extends JFrame {
 					srcAirpNameField.setSelectedItem(null);
 				} else if(srcCityNameField.getSelectedItem() == null)
 					srcAirpNameField.setItems(Airport.getairportsMap().values());
-					srcAirpNameField.setSelectedItem(null);
+				srcAirpNameField.setSelectedItem(null);
 			}
 		});
 
@@ -165,15 +162,18 @@ public class MainWindow extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				if(dstCountryNameField.getSelectedItem() instanceof Country && dstCountryNameField.getSelectedItem() != null) {
-					dstCityNameField.setItems(
-							Filter.filterCitiesByCountry(((Country)(dstCountryNameField.getSelectedItem())).getName()));
-					dstCityNameField.setSelectedItem(null);
-				}
-				else if(dstCountryNameField.getSelectedItem() == null) {
-					dstCityNameField.setItems(City.getCityMap().values());
-					dstCityNameField.setSelectedItem(null);
-				}
+				if(dstCountryNameField.getSelectedItem() instanceof Country && dstCountryNameField.getSelectedItem() != null)
+
+					if(dstCountryNameField.getSelectedItem() instanceof Country && dstCountryNameField.getSelectedItem() != null) {
+						dstCityNameField.setItems(
+								Filter.filterCitiesByCountry(((Country)(dstCountryNameField.getSelectedItem())).getName()));
+						dstCityNameField.setSelectedItem(null);
+					}
+					else if(dstCountryNameField.getSelectedItem() == null) {
+						dstCityNameField.setItems(City.getCityMap().values());
+						dstCityNameField.setSelectedItem(null);
+					}
+
 			}
 		});
 		dstCityNameField.addActionListener(new ActionListener() {
@@ -198,7 +198,7 @@ public class MainWindow extends JFrame {
 					dstAirpNameField.setSelectedItem(null);
 				} else if(dstCityNameField.getSelectedItem() == null)
 					dstAirpNameField.setItems(Airport.getairportsMap().values());
-					dstAirpNameField.setSelectedItem(null);
+				dstAirpNameField.setSelectedItem(null);
 			}
 		});
 
@@ -234,25 +234,42 @@ public class MainWindow extends JFrame {
 		allAirpCheckBox.setAlignmentX(RIGHT_ALIGNMENT);
 
 		allAirpCheckBox.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				if(allAirpCheckBox.isSelected()) test();
+				//if(allAirpCheckBox.isSelected()) test();
 			}
 		});
 		
 		addGridBagItem(optionsPanel, activeAirlinesCheckBox, 2, 2, 1, 1, GridBagConstraints.FIRST_LINE_END);
 		addGridBagItem(optionsPanel, allAirpCheckBox, 2, 3, 2, 1, GridBagConstraints.FIRST_LINE_END);
 
+		if(allAirpCheckBox.isSelected()) {
+			earth3dMap.enqueue(new Callable<Boolean>() {
 
-		//		addGridBagItem(optionsPanel, arcOptionPanel, 2, 2, 1, 1, GridBagConstraints.EAST);
+				@Override
+				public Boolean call() throws Exception {
+					earth3dMap.displayAllGeneralAirports();
+					return true;
+				}
 
+			});
+		}
+		else {
+			earth3dMap.enqueue(new Callable<Boolean>() {
+
+				@Override
+				public Boolean call() throws Exception {
+					earth3dMap.hideAllGeneralAirports();
+					return true;
+				}
+			});
+		}
 
 		optionsPanel.setBorder(BorderFactory.createTitledBorder("Options"));
 
 		searchPane.add(Box.createVerticalStrut(10));
-		//		searchPane.add(optionsPanel);
 
 		JButton option = new JButton("More...");
 
@@ -260,7 +277,7 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new OptionDialog(null, true);
+				new OptionDialog(null, true, earth3dMap);
 			}
 		});
 		airlOpPanel.add(option);
@@ -341,7 +358,6 @@ public class MainWindow extends JFrame {
 		searchPane.add(searchRoutesPanel);
 
 		searchPane.add(Box.createVerticalStrut(2000));
-		//		searchPane.setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, Color.BLACK));
 		searchPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 10));
 		
 		mainPanel.add(searchPane, BorderLayout.WEST);
@@ -391,29 +407,18 @@ public class MainWindow extends JFrame {
 	}
 
 	private void addGridBagItem(JPanel p, JComponent c, int x, int y, int width, int height, int align) {
-	    GridBagConstraints gc = new GridBagConstraints();
-	    gc.gridx = x;
-	    gc.gridy = y;
-	    gc.gridwidth = width;
-	    gc.gridheight = height;
-	    gc.weightx = 100.0;
-	    gc.weighty = 100.0;
-	    gc.insets = new Insets(5, 5, 5, 5);
-	    gc.anchor = align;
-	    gc.fill = GridBagConstraints.VERTICAL;
-	    p.add(c, gc);
-	  }
-	
-	private void test() {
-		earth3dMap.enqueue(new Callable<Boolean>() {
-
-			@Override
-			public Boolean call() throws Exception {
-				// TODO Auto-generated method stub
-				earth3dMap.changeAirportsColor(new ColorRGBA(0.1f, 0.1f, 0.1f, 1.0f));
-				return null;
-			}
-			
-		});
+		GridBagConstraints gc = new GridBagConstraints();
+		gc.gridx = x;
+		gc.gridy = y;
+		gc.gridwidth = width;
+		gc.gridheight = height;
+		gc.weightx = 100.0;
+		gc.weighty = 100.0;
+		gc.insets = new Insets(5, 5, 5, 5);
+		gc.anchor = align;
+		gc.fill = GridBagConstraints.VERTICAL;
+		p.add(c, gc);
 	}
+
+
 }

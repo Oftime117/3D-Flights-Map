@@ -222,6 +222,7 @@ public final class Filter {
 						.values()
 						.stream()
 						.distinct()
+						.filter(array -> array.isEmpty())
 						.sorted((array1, array2) -> array1.get(0).getSrcAirport().getName().compareToIgnoreCase(array2.get(0).getSrcAirport().getName()))
 						.collect(Collectors.toCollection(ArrayList::new)))));
 
