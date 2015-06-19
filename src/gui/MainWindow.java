@@ -19,6 +19,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -40,15 +41,15 @@ import com.jme3.system.JmeCanvasContext;
 
 public class MainWindow extends JFrame {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private Earth3DMap earth3dMap;
 	private JPanel mainPanel;
 	private Canvas canvas;
 
-
+	private JPanel searchPane;
+	private ResultPanel resultsPane;
+	private RouteInfoPanel routeInfoPane;
+	
 	private ComboBoxAutoComplete<Airport> srcAirpNameField, dstAirpNameField;
 	private ComboBoxAutoComplete<City> srcCityNameField, dstCityNameField;
 	private ComboBoxAutoComplete<Country>srcCountryNameField, dstCountryNameField;
@@ -74,7 +75,10 @@ public class MainWindow extends JFrame {
 
 		mainPanel = new JPanel(new BorderLayout(1,1), true);
 
-		JPanel searchPane = new JPanel(true);
+		routeInfoPane = new RouteInfoPanel();
+		mainPanel.add(routeInfoPane, BorderLayout.SOUTH);
+		
+		searchPane = new JPanel(true);
 		searchPane.setLayout(new BoxLayout(searchPane, BoxLayout.Y_AXIS));
 
 		/* Panel pour les vols de départ */
@@ -285,7 +289,7 @@ public class MainWindow extends JFrame {
 		//searchRoutesPanel.setLayout(new BoxLayout(searchRoutesPanel, BoxLayout.X_AXIS));
 		//searchRoutesPanel.setAlignmentX(RIGHT_ALIGNMENT);
 		
-		ResultPanel resultsPane = new ResultPanel(getContentPane());
+		resultsPane = new ResultPanel(getContentPane(), earth3dMap, routeInfoPane);
 		
 		JButton search = new JButton("Search");
 		search.addActionListener(new ActionListener() {
@@ -293,6 +297,9 @@ public class MainWindow extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String airlineName = null;
+				resultsPane.resetTable();
+				
+				
 				ArrayList<ArrayList<Route>> buffRoute = new ArrayList<ArrayList<Route>>();
 				
 				if(airlineNameField.getSelectedItem() != null && airlineNameField.getSelectedItem() instanceof Airline)
@@ -338,11 +345,12 @@ public class MainWindow extends JFrame {
 				}
 				resultsPane.setTableDataDouble(buffRoute);
 				
+				
 				earth3dMap.enqueue(new Callable<Boolean>() {
 
 					@Override
 					public Boolean call() throws Exception {
-//						earth3dMap.resetOverlay();
+						
 						earth3dMap.displayRoutes(buffRoute);
 						return true;
 					}
@@ -367,6 +375,7 @@ public class MainWindow extends JFrame {
 				airlineNameField.setItems(Airline.getairlinesMap().values());
 				airlineNameField.setSelectedItem(null);
 				
+				resultsPane.resetTable();
 				earth3dMap.enqueue(new Callable<Boolean>() {
 
 					@Override
@@ -398,7 +407,7 @@ public class MainWindow extends JFrame {
 
 	private void init3D() {
 		AppSettings settings = new AppSettings(true);
-		settings.setResolution(1600, 1000);
+		settings.setResolution(1000, 520);
 		settings.setSamples(8);
 		settings.setVSync(true);
 
@@ -419,16 +428,46 @@ public class MainWindow extends JFrame {
 		// Create the menus
 		final JMenuBar menubar = new JMenuBar();
 		final JMenu objectsMenu = new JMenu("File");
+		final JMenu displayMenu = new JMenu("Display");
 		final JMenu helpMenu = new JMenu("Help");
 
 		final JMenuItem createObjectItem = new JMenuItem("Create an object");
 		final JMenuItem deleteObjectItem = new JMenuItem("Delete an object");
-		final JMenuItem getControlsItem = new JMenuItem("Get controls");
+		final JCheckBoxMenuItem displaySearchPanelItem = new JCheckBoxMenuItem("Display search Panel", true);
+		displaySearchPanelItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				searchPane.setVisible(displaySearchPanelItem.isSelected());
+			}
+		});
+		
+		final JCheckBoxMenuItem displayResultPanelItem = new JCheckBoxMenuItem("Display Result Panel", true);
+		displayResultPanelItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				resultsPane.setVisible(displayResultPanelItem.isSelected());
+			}
+		});
 
+		final JCheckBoxMenuItem displayInfoPanel = new JCheckBoxMenuItem("Display Info Panel", true);
+		displayInfoPanel.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				routeInfoPane.setVisible(displayInfoPanel.isSelected());
+			}
+		});
+		
 		objectsMenu.add(createObjectItem);
 		objectsMenu.add(deleteObjectItem);
-		helpMenu.add(getControlsItem);
+		displayMenu.add(displaySearchPanelItem);
+		displayMenu.add(displayResultPanelItem);
+		displayMenu.add(displayInfoPanel);
 		menubar.add(objectsMenu);
+		menubar.add(displayMenu);
 		menubar.add(helpMenu);
 		setJMenuBar(menubar);
 	}

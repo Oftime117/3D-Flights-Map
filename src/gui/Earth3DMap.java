@@ -56,6 +56,7 @@ public class Earth3DMap extends SimpleApplication {
 	private float airportRadius = 0.002f;
 	private float arcWidth = 1.5f;
 
+	private ArrayList<ArrayList<Route>> buffRouteArray;
 
 	
 	@Override
@@ -79,19 +80,7 @@ public class Earth3DMap extends SimpleApplication {
 
 		/* Initialisation de la caméra */
 		camInit();
-//
-//		buff.stream().distinct()
-//		.forEach(array -> array.stream()
-//				.distinct()
-//				.forEach(route -> {
-//					displayArc(route.getSrcAirport().getLatitude(), 
-//							route.getSrcAirport().getLongitude(),  
-//							route.getDstAirport().getLatitude(), 
-//							route.getDstAirport().getLongitude());
-//
-//				}));
 
-		/* Optimisation du noeud générique */
 		GeometryBatchFactory.optimize(geneAirportsNode);
 	}
 
@@ -133,7 +122,7 @@ public class Earth3DMap extends SimpleApplication {
 	 * @param routeArray la liste à afficher
 	 */
 	public void displayRoutes(ArrayList<ArrayList<Route>> routeArray) {
-		System.out.println("psjerzpùsjspf");
+		buffRouteArray = routeArray;
 		routeArray.stream().distinct().filter(array -> !array.isEmpty())
 		.forEach(array -> array.stream().distinct()
 				.forEach(route -> displayArc(route
@@ -142,17 +131,6 @@ public class Earth3DMap extends SimpleApplication {
 						route.getSrcAirport().getLongitude(),  
 						route.getDstAirport().getLatitude(), 
 						route.getDstAirport().getLongitude())));
-//		routeArray = Filter.filterRoutesFromAirport2("Charles de Gaulle");
-//		routeArray.forEach(array -> {
-//			array.forEach(route ->  {
-//				displayArc(route.getSrcAirport()
-//						.getLatitude(), 
-//						route.getSrcAirport().getLongitude(),  
-//						route.getDstAirport().getLatitude(), 
-//						route.getDstAirport().getLongitude());
-//				System.out.println("sdofsofsfjoispù pfj");
-//			});
-//		});
 	}
 
 	/* Retire les trajet de la scène */
@@ -233,6 +211,12 @@ public class Earth3DMap extends SimpleApplication {
 		else System.out.println(type);
 	}
 
+	public void resetAllRoutes() {
+		hideAllArcs();
+		displayRoutes(buffRouteArray);
+	}
+	
+	
 	/**
 	 * @Brief Fonction d'initialisation de la caméra
 	 */
@@ -275,6 +259,7 @@ public class Earth3DMap extends SimpleApplication {
 
 
 
+	
 
 	public void displayArc(float lat1, float lon1, float lat2, float lon2) {
 

@@ -16,6 +16,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.concurrent.Callable;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -48,11 +49,15 @@ public class ResultPanel extends JPanel {
 	private JComboBox<Airport> airportName;
 	private JTable routes;
 	private Container parent;
+	private Earth3DMap earth3dMap;
+	private RouteInfoPanel routeInfoPanel;
 	
-	public ResultPanel(Container parent) {
+	public ResultPanel(Container parent, Earth3DMap earth3dMap, RouteInfoPanel routeInfoPanel) {
 		super();
 		
 		this.parent = parent;
+		this.earth3dMap = earth3dMap;
+		this.routeInfoPanel = routeInfoPanel;
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setBorder(BorderFactory.createTitledBorder("Results"));
@@ -125,16 +130,23 @@ public class ResultPanel extends JPanel {
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if(e.getClickCount() == 2) {
-					Route route = ((RoutesTableModel)(routes.getModel())).getRouteAt(routes.getSelectedRow());
-					System.out.println(route);
-				}
+				
 			}
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
+				if(e.getClickCount() == 2) {
+					Route route = ((RoutesTableModel)(routes.getModel())).getRouteAt(routes.getSelectedRow());
+					earth3dMap.enqueue(new Callable<Boolean>() {
+
+						@Override
+						public Boolean call() throws Exception {
+							earth3dMap.hideAllArcs();
+							earth3dMap.displayArc(route.getSrcAirport().getLatitude(), route.getSrcAirport().getLongitude(), route.getDstAirport().getLatitude(), route.getDstAirport().getLongitude());
+							return true;
+						}
+					});
+				}
 			}
 
 			@Override
@@ -146,7 +158,6 @@ public class ResultPanel extends JPanel {
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				// TODO Auto-generated method stub
-				
 			}
 
 			@Override
@@ -182,9 +193,25 @@ public class ResultPanel extends JPanel {
 			}
 		});
 		
-		hideBox.add(Box.createHorizontalGlue());
-		hideBox.add(hide);
+		JButton showAll = new JButton("Show All");
+		showAll.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				earth3dMap.enqueue(new Callable<Boolean>() {
+
+					@Override
+					public Boolean call() throws Exception {
+						earth3dMap.resetAllRoutes();
+						return true;
+					}
+				});
+			}
+		});
 		
+		hideBox.add(Box.createHorizontalGlue());
+		hideBox.add(showAll);
+		hideBox.add(hide);
 		add(hideBox);
 		
 		add(Box.createVerticalStrut(2000));
@@ -213,6 +240,10 @@ public class ResultPanel extends JPanel {
 			this.routes.getColumnModel().removeColumn(this.routes.getColumnModel().getColumn(4));
 			this.routes.getColumnModel().removeColumn(this.routes.getColumnModel().getColumn(3));
 		}
+	}
+	
+	public void resetTable() {
+		routes.removeAll();
 	}
 	
 	private void updateField(RoutesTableModel model) {
