@@ -180,13 +180,7 @@ public class Airline implements Comparable<Airline>{
 		//				+ callsign + "\n\t\tcountry = " + country + "\n\t\tactive = "
 		//				+ active + "\n\t}";
 
-		return name +" (" + country + ")\t\t(id = " + id
-				+ " / talias = " + alias 
-				+ " / IATA_Code = " + IATA_Code
-				+ " / ICAO_Code = " + ICAO_Code 
-				+ " / callsign = " + callsign 
-				+ " / country = " + country 
-				+ " / active = " + active + ")\n";
+		return name +" (" + country + ")";
 	}
 
 	public static ArrayList<Airline> filterByName(String name) {
