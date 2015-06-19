@@ -1,6 +1,5 @@
 package ghaziHamelin;
 
-import gui.Earth3DMap;
 import gui.MainWindow;
 
 import java.time.Clock;
@@ -11,7 +10,6 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import applicationPart.Airline;
 import applicationPart.Airport;
-import applicationPart.Filter;
 import applicationPart.Route;
 
 import com.jme3.system.AppSettings;

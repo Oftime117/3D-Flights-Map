@@ -145,6 +145,14 @@ public class Earth3DMap extends SimpleApplication {
 	/* Supprime tous les ajout graphique fait sur la map */
 	public void resetOverlay() {
 		overlayNode.detachAllChildren();
+		geneAirportsNode.detachAllChildren();
+		srcAirportsNode.detachAllChildren();
+		dstAirportsNode.detachAllChildren();
+		arcNode.detachAllChildren();
+		overlayNode.attachChild(geneAirportsNode);
+		overlayNode.attachChild(srcAirportsNode);
+		overlayNode.attachChild(dstAirportsNode);
+		overlayNode.attachChild(arcNode);
 	}
 
 
