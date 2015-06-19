@@ -50,7 +50,7 @@ public class ResultPanel extends JPanel {
 	private JTable routes;
 	private Container parent;
 	private Earth3DMap earth3dMap;
-	private RouteInfoPanel routeInfoPanel;
+	private static RouteInfoPanel routeInfoPanel;
 	
 	public ResultPanel(Container parent, Earth3DMap earth3dMap, RouteInfoPanel routeInfoPanel) {
 		super();
@@ -137,6 +137,7 @@ public class ResultPanel extends JPanel {
 			public void mousePressed(MouseEvent e) {
 				if(e.getClickCount() == 2) {
 					Route route = ((RoutesTableModel)(routes.getModel())).getRouteAt(routes.getSelectedRow());
+					routeInfoPanel.setRoute(route);
 					earth3dMap.enqueue(new Callable<Boolean>() {
 
 						@Override

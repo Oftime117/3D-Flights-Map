@@ -104,6 +104,34 @@ public class Airport implements Comparable<Airport> {
 	}
 
 	/**
+	 * @return the iATA_FAA_Code
+	 */
+	public String getIATA_FAA_Code() {
+		return IATA_FAA_Code;
+	}
+
+	/**
+	 * @return the iCAO_Code
+	 */
+	public String getICAO_Code() {
+		return ICAO_Code;
+	}
+
+	/**
+	 * @return the id
+	 */
+	public int getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	/**
 	 * @return the airportsMap
 	 */
 	public static ConcurrentHashMap<MultiKey, Airport> getairportsMap() {

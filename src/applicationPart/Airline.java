@@ -20,6 +20,20 @@ public class Airline implements Comparable<Airline>{
 	private String IATA_Code;
 	private String ICAO_Code;
 	private String callsign;
+	/**
+	 * @return the callsign
+	 */
+	public String getCallsign() {
+		return callsign;
+	}
+
+	/**
+	 * @param callsign the callsign to set
+	 */
+	public void setCallsign(String callsign) {
+		this.callsign = callsign;
+	}
+
 	private String country;
 	private String active;
 
@@ -196,4 +210,47 @@ public class Airline implements Comparable<Airline>{
 	public int compareTo(Airline o) {
 		return this.getName().compareToIgnoreCase(o.getName());
 	}
+	
+	/**
+	 * @return the alias
+	 */
+	public String getAlias() {
+		return alias;
+	}
+
+	/**
+	 * @param alias the alias to set
+	 */
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
+
+	/**
+	 * @return the iATA_Code
+	 */
+	public String getIATA_Code() {
+		return IATA_Code;
+	}
+
+	/**
+	 * @param iATA_Code the iATA_Code to set
+	 */
+	public void setIATA_Code(String iATA_Code) {
+		IATA_Code = iATA_Code;
+	}
+
+	/**
+	 * @return the iCAO_Code
+	 */
+	public String getICAO_Code() {
+		return ICAO_Code;
+	}
+
+	/**
+	 * @param iCAO_Code the iCAO_Code to set
+	 */
+	public void setICAO_Code(String iCAO_Code) {
+		ICAO_Code = iCAO_Code;
+	}
+
 }
