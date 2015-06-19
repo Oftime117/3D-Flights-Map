@@ -243,7 +243,8 @@ public class ResultPanel extends JPanel {
 	}
 	
 	public void resetTable() {
-		routes.removeAll();
+//		routes.removeAll();
+		routes.setModel(new RoutesTableModel());
 	}
 	
 	private void updateField(RoutesTableModel model) {
