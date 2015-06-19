@@ -56,7 +56,7 @@ public class ResultPanel extends JPanel {
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setBorder(BorderFactory.createTitledBorder("Results"));
-		setPreferredSize(new Dimension(800, getPreferredSize().height));
+		setPreferredSize(new Dimension(300, getPreferredSize().height));
 		
 		countryName = new JComboBox<Country>();
 		cityName = new JComboBox<City>();
@@ -143,6 +143,7 @@ public class ResultPanel extends JPanel {
 			}
 		});
 		
+		add(new JLabel("Filters"));
 	    add(Box.createVerticalStrut(10));
 		add(countryName);
 		add(Box.createVerticalStrut(10));
@@ -180,14 +181,25 @@ public class ResultPanel extends JPanel {
 		RoutesTableModel model = new RoutesTableModel();
 		model.fromDoubleAray(routes);
 		updateField(model);
-		System.out.println(this.routes.getColumnModel().getColumnCount());
 		this.routes.setModel(model);
+		if(this.routes.getColumnModel().getColumnCount()>0) {
+			this.routes.getColumnModel().removeColumn(this.routes.getColumnModel().getColumn(6));
+			this.routes.getColumnModel().removeColumn(this.routes.getColumnModel().getColumn(5));
+			this.routes.getColumnModel().removeColumn(this.routes.getColumnModel().getColumn(4));
+			this.routes.getColumnModel().removeColumn(this.routes.getColumnModel().getColumn(3));
+		}
 	}
 	
 	public void setTableData(ArrayList<Route> routes) {
 		RoutesTableModel model = new RoutesTableModel(routes);
 		updateField(model);
 		this.routes.setModel(model);
+		if(this.routes.getColumnModel().getColumnCount()>0) {
+			this.routes.getColumnModel().removeColumn(this.routes.getColumnModel().getColumn(6));
+			this.routes.getColumnModel().removeColumn(this.routes.getColumnModel().getColumn(5));
+			this.routes.getColumnModel().removeColumn(this.routes.getColumnModel().getColumn(4));
+			this.routes.getColumnModel().removeColumn(this.routes.getColumnModel().getColumn(3));
+		}
 	}
 	
 	private void updateField(RoutesTableModel model) {

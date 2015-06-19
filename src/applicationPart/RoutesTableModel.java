@@ -7,9 +7,17 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 public class RoutesTableModel extends AbstractTableModel {
-	private final String[] columns = {"Departure", "Arrival", "Airline", "Departure Country", "Departure City", "Destination Country", "Destination City"};
-	private final List<Route> routes = new ArrayList<Route>();
+	private String[] columns = {"Departure", "Arrival", "Airline", "Departure Country", "Departure City", "Destination Country", "Destination City"};
+	private List<Route> routes = new ArrayList<Route>();
 	
+	/**
+	 * @return the routes
+	 */
+	public List<Route> getRoutes() {
+		return routes;
+	}
+
+
 	public RoutesTableModel() {
 		super();
 	}
@@ -60,6 +68,28 @@ public class RoutesTableModel extends AbstractTableModel {
 			return routes.get(rowIndex).getDstAirport().getCountry();
 		case 6:
 			return routes.get(rowIndex).getDstAirport().getCity();
+		default:
+			return null;
+		}
+	}
+	
+	@Override
+	public Class<?> getColumnClass(int columnIndex) {
+		switch(columnIndex) {
+		case 0:
+			return Airport.class;
+		case 1:
+			return Airport.class;
+		case 2:
+			return Airline.class;
+		case 3:
+			return Country.class;
+		case 4:
+			return City.class;
+		case 5:
+			return Country.class;
+		case 6: 
+			return City.class;
 		default:
 			return null;
 		}
