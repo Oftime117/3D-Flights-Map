@@ -266,8 +266,9 @@ public class MainWindow extends JFrame {
 		addGridBagItem(optionsPanel, option, 2, 3, 1, 1, GridBagConstraints.EAST);
 		searchPane.add(optionsPanel);
 		
-		JPanel searchRoutesPanel = new JPanel();
-		searchRoutesPanel.setLayout(new BoxLayout(searchRoutesPanel, BoxLayout.X_AXIS));
+		Box searchRoutesPanel = Box.createHorizontalBox();
+		//searchRoutesPanel.setLayout(new BoxLayout(searchRoutesPanel, BoxLayout.X_AXIS));
+		//searchRoutesPanel.setAlignmentX(RIGHT_ALIGNMENT);
 		
 		JButton search = new JButton("Search");
 		search.addActionListener(new ActionListener() {
@@ -298,18 +299,21 @@ public class MainWindow extends JFrame {
 			}
 		});
 		
-		searchRoutesPanel.add(search);
+		searchRoutesPanel.add(Box.createHorizontalGlue());
 		searchRoutesPanel.add(reset);
-
+		searchRoutesPanel.add(search);
+		
 		searchPane.add(searchRoutesPanel);
 
 		searchPane.add(Box.createVerticalStrut(2000));
 		//		searchPane.setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, Color.BLACK));
 		searchPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 10));
 		
+		ResultPanel resultsPane = new ResultPanel(getContentPane());
 		
 		mainPanel.add(searchPane, BorderLayout.WEST);
 		mainPanel.add(canvas, BorderLayout.CENTER);
+		mainPanel.add(resultsPane, BorderLayout.EAST);
 		mainPanel.setOpaque(true);
 		setContentPane(mainPanel);
 		this.setVisible(true);
