@@ -97,7 +97,7 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("country select "+ srcCountryNameField.getSelectedItem());
+//				System.out.println("country select "+ srcCountryNameField.getSelectedItem());
 				if(srcCountryNameField.getSelectedItem() instanceof Country && srcCountryNameField.getSelectedItem() != null)
 					srcCityNameField.setItems(
 							Filter.filterCitiesByCountry(((Country)(srcCountryNameField.getSelectedItem())).getName()));
@@ -110,7 +110,7 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("city select "+srcCityNameField.getSelectedItem()+" "+e.getSource());
+//				System.out.println("city select "+srcCityNameField.getSelectedItem()+" "+e.getSource());
 				if(srcCityNameField.getSelectedItem() instanceof City && srcCityNameField.getSelectedItem() != null) {
 					ArrayList<ArrayList<Airport>> airportsByCity = 
 							Filter.filterAirportsByCity(((City)(srcCityNameField.getSelectedItem())).getName());
@@ -159,7 +159,7 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("country select "+ dstCountryNameField.getSelectedItem());
+//				System.out.println("country select "+ dstCountryNameField.getSelectedItem());
 				if(dstCountryNameField.getSelectedItem() instanceof Country && dstCountryNameField.getSelectedItem() != null)
 					dstCityNameField.setItems(
 							Filter.filterCitiesByCountry(((Country)(dstCountryNameField.getSelectedItem())).getName()));
@@ -172,7 +172,7 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("city select "+dstCityNameField.getSelectedItem());
+//				System.out.println("city select "+dstCityNameField.getSelectedItem());
 				if(dstCityNameField.getSelectedItem() instanceof City && dstCityNameField.getSelectedItem() != null) {
 					ArrayList<ArrayList<Airport>> airportsByCity = 
 							Filter.filterAirportsByCity(((City)(dstCityNameField.getSelectedItem())).getName());

@@ -32,9 +32,9 @@ public class Earth3DMap extends SimpleApplication {
 	private static final float TEXTURE_LAT_OFFSET = -0.2f;
 	private static final float TEXTURE_LON_OFFSET = 2.8f;
 
-//	private static final float LINE_RESOLUTION_VALUE = 0.001f;
-//	private static final float LINE_ALTITUDE_FACTOR = 0.1f;
-//	private static final float LINE_ALT_VS_DIST_FACTOR = 5f;
+	private static final float LINE_RESOLUTION_VALUE = 0.001f;
+	private static final float LINE_ALTITUDE_FACTOR = 0.1f;
+	private static final float LINE_ALT_VS_DIST_FACTOR = 5f;
 
 	
 	private Node earthNode = new Node();
@@ -44,9 +44,9 @@ public class Earth3DMap extends SimpleApplication {
 	
 	private float airportRadius = 0.02f;
 	private ColorRGBA airportColor = ColorRGBA.Yellow;
-	private ColorRGBA arcColor = ColorRGBA.Green;
+	private ColorRGBA arcColor = ColorRGBA.Orange;
 	private float scale = 2.0f;
-	private float arcGirth = 1.5f;
+	private float arcWidth = 1.5f;
 	
 	
 	Spatial earth_geom;
@@ -56,28 +56,40 @@ public class Earth3DMap extends SimpleApplication {
 
 		assetManager.registerLocator("earth.zip", ZipLocator.class);
 		earth_geom = assetManager.loadModel("Sphere.mesh.xml");
-		
-		
-		
-		ArrayList<ArrayList<Route>> buff = Filter.filterRoutesFromAirport2("Charles de Gaulle");
-		
-		
-		
-		rootNode.attachChild(earthNode);
-		camInit();
-		
-		buff.stream().distinct().forEach(array -> array.stream().distinct().forEach(route -> displayArc(route.getSrcAirport().getLatitude(), route.getSrcAirport().getLongitude(), route.getDstAirport().getLatitude(), route.getDstAirport().getLongitude()) ));
-		
-//		displayArc(buff.getSrcAirport().getLatitude(), buff.getSrcAirport().getLongitude(), buff.getDstAirport().getLatitude(), buff.getDstAirport().getLongitude());
-		airportsNode.getChildren().forEach(System.out::println);
-//		displayAllAirports();
 		overlayNode.attachChild(airportsNode);
 		overlayNode.attachChild(arcNode);
 		
 		earthNode.attachChild(earth_geom);
 		earthNode.attachChild(overlayNode);
-		earthNode.scale(scale);
-		GeometryBatchFactory.optimize(earthNode);
+		
+		rootNode.attachChild(earthNode);
+		
+		
+		ArrayList<ArrayList<Route>> buff = Filter.filterRoutesFromAirport2("Charles de Gaulle");
+		
+		
+		camInit();
+		
+		buff.stream().distinct()
+		.forEach(array -> array.stream()
+				.distinct()
+				.forEach(route -> {
+					displayArc(route.getSrcAirport().getLatitude(), 
+							route.getSrcAirport().getLongitude(),  
+							route.getDstAirport().getLatitude(), 
+							route.getDstAirport().getLongitude(), 
+							route.getSrcAirport().getName(),
+							route.getDstAirport().getName(),
+							ColorRGBA.Yellow, 
+							ColorRGBA.Green);
+					
+				}));
+				
+		airportsNode.getChildren().forEach(System.out::println);
+		
+//		earthNode.scale(scale);
+		GeometryBatchFactory.optimize(airportsNode);
+//		GeometryBatchFactory.optimize(arcNode);
 	}
 	
 	private static Vector3f geoCoordTo3dCoord(float lat, float lon)
@@ -92,23 +104,23 @@ public class Earth3DMap extends SimpleApplication {
 							* FastMath.cos(lat_cor * FastMath.DEG_TO_RAD));
 	}
 	
-	public void displayAirport(float latitude, float longitude)
+	public void displayAirport(float latitude, float longitude, String name, ColorRGBA color)
 	{
 		Sphere sphere = new Sphere(16, 8, airportRadius);
-		Geometry airpGeom = new Geometry("airpGeom", sphere);
+		Geometry airpGeom = new Geometry(name, sphere);
 		Material airpMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-		airpMat.setColor("Color", airportColor);
+		airpMat.setColor("Color", color);
 		airpGeom.setMaterial(airpMat);
 		airpGeom.setLocalTranslation(geoCoordTo3dCoord(latitude, longitude));
 		if (!airportsNode.hasChild(airpGeom)) airportsNode.attachChild(airpGeom);
 	}
 	
-	public void displayAllAirports() {
+	public void displayAllAirports(ColorRGBA color) {
 		Airport.getairportsMap()
 		.values()
 		//.stream().limit(1000)
 		.forEach(airport -> {
-			displayAirport(airport.getLatitude(), airport.getLongitude()/*, airport.getName() + airport.getCity().getName()*/);
+			displayAirport(airport.getLatitude(), airport.getLongitude(), airport.getName() + airport.getCity().getName(), ColorRGBA.Blue);
 		});
 	}
 	
@@ -163,106 +175,16 @@ public class Earth3DMap extends SimpleApplication {
 		inputManager.addListener(analogListener, "Rotate Left", "Rotate Right", "Rotate Up", "Rotate Down");
 	}
 	
-//	private void drawRoute(float srcLat, float srcLon, float dstLat, float dstLon) {
-//		
-//		Vector3f srcCoord = geoCoordTo3dCoord(srcLat, srcLon);
-//		Vector3f dstCoord = geoCoordTo3dCoord(dstLat, dstLon);
-//		System.out.println(earth_geom.getWorldScale());
-//
-//		
-//		
-//		Mesh lineMesh = new Mesh();
-//		lineMesh.setMode(Mesh.Mode.LineStrip);
-//		lineMesh.setBuffer(VertexBuffer.Type.Position, 3, BufferUtils.createFloatBuffer(vertices));
-//		lineMesh.updateBound();
-//		lineMesh.setLineWidth(2.0f);
-//		
-//		Geometry lineGeo = new Geometry("lineGeo", lineMesh);
-//		Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-//		mat.setColor("Color", ColorRGBA.Green);
-//		lineGeo.setMaterial(mat);
-//		lineGeo.scale(dstCoord.distance(srcCoord));
-////		lineGeo.setLocalTranslation(dstCoord);
-//		
-//		arcNode.attachChild(lineGeo);
-//		
-//	}
-	
-//public void displayArc(float lat1, float lon1, float lat2, float lon2) {
-//		
-//		displayAirport(lat1, lon1);
-//		displayAirport(lat2, lon2);
-//		System.out.println("lslsjsj");
-//		Vector3f[] vertices;
-//		float dist, step_dist, current_dist, para_coef_a, para_coef_c, inc_coef = 1;
-//
-//		Vector3f pos1 = geoCoordTo3dCoord(lat1, lon1);
-//		Vector3f pos2 = geoCoordTo3dCoord(lat2, lon2);
-//
-//		dist = FastMath.sqrt(FastMath.sqr(pos2.x - pos1.x)
-//			+ FastMath.sqr(pos2.y-pos1.y)
-//			+ FastMath.sqr(pos2.z - pos1.z));
-//	
-//		int nb_step = (int) (dist/LINE_RESOLUTION_VALUE);
-//		vertices = new Vector3f[(nb_step + 2)];
-//		System.out.println(nb_step);
-//		Vector3f v1to2 = pos2.subtract(pos1).divide(nb_step);
-//		step_dist = FastMath.sqrt(FastMath.sqr(v1to2.x)
-//			+ FastMath.sqr(v1to2.y)
-//			+ FastMath.sqr(v1to2.z));
-//
-//		vertices[0]= pos1.clone();
-//		vertices[nb_step+1] = pos2.clone();
-//		Vector3f current_pos = pos1;
-//
-//		current_dist = - dist /2;
-//		
-//
-//		para_coef_c = LINE_ALTITUDE_FACTOR * (LINE_ALT_VS_DIST_FACTOR+dist) / LINE_ALT_VS_DIST_FACTOR;
-//		para_coef_a = -para_coef_c / FastMath.sqr(dist/2);
-//	
-//	
-//		for(int i=1; i<=nb_step; i++){
-//			current_pos = current_pos.add(v1to2);
-//			current_dist = current_dist + step_dist;
-//			
-//			inc_coef = 1 + (para_coef_a * FastMath.sqr(current_dist) + para_coef_c);
-//			
-//			
-//			Vector3f new_pos_n = current_pos.normalize().mult(inc_coef);
-//			vertices[i] = new_pos_n;
-//		}
-//		
-//		
-//		Mesh lineMesh = new Mesh();
-//		lineMesh.setMode(Mesh.Mode.LineStrip);
-//		lineMesh.setBuffer(VertexBuffer.Type.Position, 3, BufferUtils.createFloatBuffer(vertices));
-//		lineMesh.updateBound();
-//		lineMesh.setLineWidth(2.0f);
-//		
-//		Geometry lineGeo = new Geometry("lineGeo", lineMesh);
-//		Material mat = new Material (assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-//		mat.setColor("Color", arcColor);
-//		lineGeo.setMaterial(mat);
-//		airportsNode.attachChild(lineGeo);
-//		
-//		System.out.println(lineGeo);
-//	}
-	
-	
-
-private static final float LINE_RESOLUTION_VALUE = 0.001f;
-	private static final float LINE_ALTITUDE_FACTOR = 0.1f;
-	private static final float LINE_ALT_VS_DIST_FACTOR = 5f;
 
 
 
 
 
-public void displayArc(float lat1, float lon1, float lat2, float lon2) {
+
+public void displayArc(float lat1, float lon1, float lat2, float lon2, String name1, String name2, ColorRGBA srcColor, ColorRGBA dstColor) {
 		
-		displayAirport(lat1, lon1);
-		displayAirport(lat2, lon2);
+		displayAirport(lat1, lon1, name1, srcColor);
+		displayAirport(lat2, lon2, name2, dstColor);
 		
 		Vector3f[] vertices;
 		float dist, step_dist, current_dist, para_coef_a, para_coef_c, inc_coef = 1;
@@ -309,40 +231,40 @@ public void displayArc(float lat1, float lon1, float lat2, float lon2) {
 		lineMesh.setMode(Mesh.Mode.LineStrip);
 		lineMesh.setBuffer(VertexBuffer.Type.Position, 3, BufferUtils.createFloatBuffer(vertices));
 		lineMesh.updateBound();
-		lineMesh.setLineWidth(2.0f);
+		lineMesh.setLineWidth(arcWidth);
 		
 		Geometry lineGeo = new Geometry("lineGeo", lineMesh);
 		Material mat = new Material (assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-		mat.setColor("Color", ColorRGBA.Cyan);
+		mat.setColor("Color", arcColor);
 		lineGeo.setMaterial(mat);
-		airportsNode.attachChild(lineGeo);
+		arcNode.attachChild(lineGeo);
 		
 	}
 	
-	@Override
-	public void simpleUpdate(float tpf) {
-		if(deleted != true)
-		{
-			// changement du background
-			viewPort.setBackgroundColor(new ColorRGBA(0.1f,0.1f,0.1f,1.0f));
-			
-//			 Param�tre de flyCam pour passer en azerty
-			inputManager.deleteMapping("FLYCAM_Forward");
-			inputManager.deleteMapping("FLYCAM_Backward");
-			inputManager.deleteMapping("FLYCAM_Lower");
-			inputManager.deleteMapping("FLYCAM_StrafeLeft");
-			inputManager.deleteMapping("FLYCAM_StrafeRight");
-			inputManager.deleteMapping("FLYCAM_Rise");
-			inputManager.addMapping("FLYCAM_Forward", new KeyTrigger(KeyInput.KEY_Z));
-			inputManager.addMapping("FLYCAM_Backward", new KeyTrigger(KeyInput.KEY_S));
-			inputManager.addMapping("FLYCAM_StrafeLeft", new KeyTrigger(KeyInput.KEY_Q));
-			inputManager.addMapping("FLYCAM_StrafeRight", new KeyTrigger(KeyInput.KEY_D));
-			inputManager.addMapping("FLYCAM_Rise", new KeyTrigger(KeyInput.KEY_SPACE));
-			inputManager.addMapping("FLYCAM_Lower", new KeyTrigger(KeyInput.KEY_LCONTROL));
-			inputManager.addListener(flyCam, new String[] {"FLYCAM_Forward", "FLYCAM_Backward", "FLYCAM_Lower", "FLYCAM_StrafeLeft", "FLYCAM_StrafeRight", "FLYCAM_Rise"});
-			flyCam.setMoveSpeed(10f);
-			flyCam.setZoomSpeed(20.0f);
-			deleted = true;		
-		}
-	}
+//	@Override
+//	public void simpleUpdate(float tpf) {
+//		if(deleted != true)
+//		{
+//			// changement du background
+//			viewPort.setBackgroundColor(new ColorRGBA(0.1f,0.1f,0.1f,1.0f));
+//			
+////			 Param�tre de flyCam pour passer en azerty
+//			inputManager.deleteMapping("FLYCAM_Forward");
+//			inputManager.deleteMapping("FLYCAM_Backward");
+//			inputManager.deleteMapping("FLYCAM_Lower");
+//			inputManager.deleteMapping("FLYCAM_StrafeLeft");
+//			inputManager.deleteMapping("FLYCAM_StrafeRight");
+//			inputManager.deleteMapping("FLYCAM_Rise");
+//			inputManager.addMapping("FLYCAM_Forward", new KeyTrigger(KeyInput.KEY_Z));
+//			inputManager.addMapping("FLYCAM_Backward", new KeyTrigger(KeyInput.KEY_S));
+//			inputManager.addMapping("FLYCAM_StrafeLeft", new KeyTrigger(KeyInput.KEY_Q));
+//			inputManager.addMapping("FLYCAM_StrafeRight", new KeyTrigger(KeyInput.KEY_D));
+//			inputManager.addMapping("FLYCAM_Rise", new KeyTrigger(KeyInput.KEY_SPACE));
+//			inputManager.addMapping("FLYCAM_Lower", new KeyTrigger(KeyInput.KEY_LCONTROL));
+//			inputManager.addListener(flyCam, new String[] {"FLYCAM_Forward", "FLYCAM_Backward", "FLYCAM_Lower", "FLYCAM_StrafeLeft", "FLYCAM_StrafeRight", "FLYCAM_Rise"});
+//			flyCam.setMoveSpeed(10f);
+//			flyCam.setZoomSpeed(20.0f);
+//			deleted = true;		
+//		}
+//	}
 }
