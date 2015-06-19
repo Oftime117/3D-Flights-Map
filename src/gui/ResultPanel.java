@@ -9,6 +9,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -54,7 +56,7 @@ public class ResultPanel extends JPanel {
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setBorder(BorderFactory.createTitledBorder("Results"));
-		setPreferredSize(new Dimension(800, getPreferredSize().height));
+		setPreferredSize(new Dimension(300, getPreferredSize().height));
 		
 		countryName = new JComboBox<Country>();
 		cityName = new JComboBox<City>();
@@ -69,6 +71,8 @@ public class ResultPanel extends JPanel {
 				if(airportName.getSelectedItem() != null) {
 					TableRowSorter<RoutesTableModel> sorter = (TableRowSorter<RoutesTableModel>) routes.getRowSorter();
 					sorter.setRowFilter(RowFilter.regexFilter(airportName.getSelectedItem().toString(), 0, 1));
+					countryName.setSelectedItem(null);
+					cityName.setSelectedItem(null);
 				}
 				
 			}
@@ -79,13 +83,15 @@ public class ResultPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if(countryName.getSelectedItem() != null) {
 					
-					Country buffCountry = (Country) countryName.getSelectedItem();
-					cityName.removeAll();
-					buffCountry.getCCMap().values().forEach(city -> cityName.addItem(city));
-					cityName.setSelectedItem(null);
+//					Country buffCountry = (Country) countryName.getSelectedItem();
+//					cityName.removeAll();
+//					buffCountry.getCCMap().values().forEach(city -> cityName.addItem(city));
+//					cityName.setSelectedItem(null);
 					TableRowSorter<RoutesTableModel> sorter = (TableRowSorter<RoutesTableModel>) routes.getRowSorter();
 					sorter.setRowFilter(RowFilter.regexFilter(countryName.getSelectedItem().toString(), 3, 5));
-					
+
+					airportName.setSelectedItem(null);
+					cityName.setSelectedItem(null);
 				}
 			}
 		});
@@ -96,11 +102,16 @@ public class ResultPanel extends JPanel {
 				if(cityName.getSelectedItem() != null) {
 					TableRowSorter<RoutesTableModel> sorter = (TableRowSorter<RoutesTableModel>) routes.getRowSorter();
 					sorter.setRowFilter(RowFilter.regexFilter(cityName.getSelectedItem().toString(), 4, 6));
+
 					
 //					City buffCity = (City) cityName.getSelectedItem();
 //					cityName.removeAll();
 //					buffCity.getCityAirportMap().values().forEach(airport -> airportName.addItem(airport));
 //					airportName.setSelectedItem(null);
+
+//					airportName.setSelectedItem(null);
+//					countryName.setSelectedItem(null);
+
 				}
 				
 			}
@@ -109,6 +120,43 @@ public class ResultPanel extends JPanel {
 		routes = new JTable();
 		routes.setAutoCreateRowSorter(true);
 		
+		
+		routes.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(e.getClickCount() == 2) {
+					Route route = ((RoutesTableModel)(routes.getModel())).getRouteAt(routes.getSelectedRow());
+					System.out.println(route);
+				}
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		add(new JLabel("Filters"));
 	    add(Box.createVerticalStrut(10));
 		add(countryName);
 		add(Box.createVerticalStrut(10));
@@ -146,14 +194,25 @@ public class ResultPanel extends JPanel {
 		RoutesTableModel model = new RoutesTableModel();
 		model.fromDoubleAray(routes);
 		updateField(model);
-		System.out.println(this.routes.getColumnModel().getColumnCount());
 		this.routes.setModel(model);
+		if(this.routes.getColumnModel().getColumnCount()>0) {
+			this.routes.getColumnModel().removeColumn(this.routes.getColumnModel().getColumn(6));
+			this.routes.getColumnModel().removeColumn(this.routes.getColumnModel().getColumn(5));
+			this.routes.getColumnModel().removeColumn(this.routes.getColumnModel().getColumn(4));
+			this.routes.getColumnModel().removeColumn(this.routes.getColumnModel().getColumn(3));
+		}
 	}
 	
 	public void setTableData(ArrayList<Route> routes) {
 		RoutesTableModel model = new RoutesTableModel(routes);
 		updateField(model);
 		this.routes.setModel(model);
+		if(this.routes.getColumnModel().getColumnCount()>0) {
+			this.routes.getColumnModel().removeColumn(this.routes.getColumnModel().getColumn(6));
+			this.routes.getColumnModel().removeColumn(this.routes.getColumnModel().getColumn(5));
+			this.routes.getColumnModel().removeColumn(this.routes.getColumnModel().getColumn(4));
+			this.routes.getColumnModel().removeColumn(this.routes.getColumnModel().getColumn(3));
+		}
 	}
 	
 	private void updateField(RoutesTableModel model) {
@@ -189,20 +248,20 @@ public class ResultPanel extends JPanel {
 				buffCountry = model.getRouteAt(i).getSrcAirport().getCountry();
 				countryName.addItem(buffCountry);
 				
-//				buffCountry.getCCMap().values().forEach(city -> {
-//					cityName.addItem(city);
-//					city.getCityAirportMap().values().forEach(airport -> airportName.addItem(airport));
-//				});
+				buffCountry.getCCMap().values().forEach(city -> {
+					cityName.addItem(city);
+					city.getCityAirportMap().values().forEach(airport -> airportName.addItem(airport));
+				});
 				
 			}
 			if(((DefaultComboBoxModel<Country>)countryName.getModel()).getIndexOf(model.getRouteAt(i).getDstAirport().getCountry()) == -1 ) {
 				buffCountry = model.getRouteAt(i).getDstAirport().getCountry();
 				countryName.addItem(buffCountry);
 				
-//				buffCountry.getCCMap().values().forEach(city -> {
-//					cityName.addItem(city);
-//					city.getCityAirportMap().values().forEach(airport -> airportName.addItem(airport));
-//				});
+				buffCountry.getCCMap().values().forEach(city -> {
+					cityName.addItem(city);
+					city.getCityAirportMap().values().forEach(airport -> airportName.addItem(airport));
+				});
 			}
 			countryName.setSelectedItem(null);
 			cityName.setSelectedItem(null);
