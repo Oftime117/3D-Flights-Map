@@ -26,7 +26,7 @@ import com.jme3.util.BufferUtils;
 
 
 /**
- * @Class Classe gérant la partie 3D (map 3D) de l'application
+ * @Class Classe gérant la partie 3D de l'application
  * 
  */
 

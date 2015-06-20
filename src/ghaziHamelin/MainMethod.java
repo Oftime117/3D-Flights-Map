@@ -8,7 +8,6 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import applicationPart.Airline;
 import applicationPart.Airport;
-import applicationPart.Filter;
 import applicationPart.Route;
 
 /**
@@ -46,19 +45,6 @@ public class MainMethod {
 		}
 
 		Route.parse();	
-		
-		
-		Filter.filterRoutesFromCity2("Paris")
-		.stream()
-		.forEach(array -> array.stream()
-				.filter(route -> {
-					return route.getDstAirport().getCity().getName().equals("London");
-				}).forEach(System.out::println));
-		System.err.println("epfspofjopfjeoooooooooooooooooooooooooooooooooooooooooooo");
-//		Filter.filterRoutesFromCity2("Paris").forEach(System.out::println);
-		
-//		Filter.filterByDirectCityToCity2("Paris", "London", null, false).forEach(System.out::println);
-		//Filter.filterByDirectAirpToAirp2("Charles de gaulle", "Heathrow", null, false).forEach(System.out::println);;
 	}
 	
 	
