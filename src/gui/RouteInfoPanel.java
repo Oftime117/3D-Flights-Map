@@ -35,7 +35,7 @@ public class RouteInfoPanel extends JPanel {
 	private JLabel srcTz_timezoneLabel = new JLabel("TZ_Timezone: "), dstTz_timezoneLabel = new JLabel("TZ_Timezone: ");
 	private JLabel srcCountryLabel = new JLabel("Country: "), dstCountryLabel = new JLabel("Country: ");
 	private JLabel srcCityLabel = new JLabel("City: "), dstCityLabel = new JLabel("City: ");
-	
+
 	private JLabel airlid = new JLabel("Id: ");
 	private JLabel airlName = new JLabel("Name: ");
 	private JLabel airlAlias = new JLabel("Alias: ");
@@ -44,14 +44,14 @@ public class RouteInfoPanel extends JPanel {
 	private JLabel airlCallsign = new JLabel("Callsign: ");
 	private JLabel airlCountry = new JLabel("Country: ");
 	private JLabel airlActive = new JLabel("Active: ");
-	
+
 	public RouteInfoPanel() {
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		
-		
+
+
 		JPanel srcPanel = new JPanel();
 		srcPanel.setLayout(new GridBagLayout());
-		
+
 		MainWindow.addGridBagItem(srcPanel, srcidLabel, 0, 0, 1, 1, GridBagConstraints.WEST);
 		MainWindow.addGridBagItem(srcPanel, srcNameLabel, 1, 0, 1, 1, GridBagConstraints.WEST);
 		MainWindow.addGridBagItem(srcPanel, srcIATA_FAA_CodeLabel, 0, 1, 1, 1, GridBagConstraints.WEST);
@@ -64,13 +64,13 @@ public class RouteInfoPanel extends JPanel {
 		MainWindow.addGridBagItem(srcPanel, srcTz_timezoneLabel, 2, 3, 1, 1, GridBagConstraints.WEST);
 		MainWindow.addGridBagItem(srcPanel, srcCityLabel, 0, 4, 1, 1, GridBagConstraints.WEST);
 		MainWindow.addGridBagItem(srcPanel, srcCountryLabel, 1, 4, 1, 1, GridBagConstraints.WEST);
-		
+
 		srcPanel.setBorder(BorderFactory.createTitledBorder("Source Airport"));
-		
-		
+
+
 		JPanel dstPanel = new JPanel();
 		dstPanel.setLayout(new GridBagLayout());
-		
+
 		MainWindow.addGridBagItem(dstPanel, dstidLabel, 0, 0, 1, 1, GridBagConstraints.WEST);
 		MainWindow.addGridBagItem(dstPanel, dstNameLabel, 1, 0, 1, 1, GridBagConstraints.WEST);
 		MainWindow.addGridBagItem(dstPanel, dstIATA_FAA_CodeLabel, 0, 1, 1, 1, GridBagConstraints.WEST);
@@ -83,20 +83,20 @@ public class RouteInfoPanel extends JPanel {
 		MainWindow.addGridBagItem(dstPanel, dstTz_timezoneLabel, 2, 3, 1, 1, GridBagConstraints.WEST);
 		MainWindow.addGridBagItem(dstPanel, dstCityLabel, 0, 4, 1, 1, GridBagConstraints.WEST);
 		MainWindow.addGridBagItem(dstPanel, dstCountryLabel, 1, 4, 1, 1, GridBagConstraints.WEST);
-		
+
 		dstPanel.setBorder(BorderFactory.createTitledBorder("Destination Airport"));
-		
+
 		JPanel airportsPanel = new JPanel();
 		airportsPanel.setLayout(new BoxLayout(airportsPanel, BoxLayout.X_AXIS));
-		
+
 		airportsPanel.add(srcPanel);
 		airportsPanel.add(dstPanel);
 		this.add(airportsPanel);
-		
-		
+
+
 		JPanel airlinePanel = new JPanel();
 		airlinePanel.setLayout(new GridBagLayout());
-		
+
 		MainWindow.addGridBagItem(airlinePanel, airlid, 0, 0, 1, 1, GridBagConstraints.WEST);
 		MainWindow.addGridBagItem(airlinePanel, airlName, 0, 1, 1, 1, GridBagConstraints.WEST);
 		MainWindow.addGridBagItem(airlinePanel, airlAlias, 1, 1, 1, 1, GridBagConstraints.WEST);
@@ -105,138 +105,29 @@ public class RouteInfoPanel extends JPanel {
 		MainWindow.addGridBagItem(airlinePanel, airlCountry, 0, 3, 1, 1, GridBagConstraints.WEST);
 		MainWindow.addGridBagItem(airlinePanel, airlCallsign, 0, 4, 1, 1, GridBagConstraints.WEST);
 		MainWindow.addGridBagItem(airlinePanel, airlActive, 1, 4, 1, 1, GridBagConstraints.WEST);
-		
+
 		airlinePanel.setBorder(BorderFactory.createTitledBorder("Airline"));
-		
+
 		JPanel endPanel = new  JPanel();
 		endPanel.setLayout(new BoxLayout(endPanel, BoxLayout.X_AXIS));
-		
+
 		endPanel.add(airlinePanel);
-		
+
 		JButton hide = new JButton("Hide this");
 		hide.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				RouteInfoPanel.this.setVisible(false);
 			}
 		});
-		
+
 		endPanel.add(hide);
 		this.add(endPanel);
 		this.setVisible(true);
 	}
 
-	public RouteInfoPanel(Route route) {
-this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		
-		
-		JPanel srcPanel = new JPanel();
-		srcPanel.setLayout(new GridBagLayout());
-		
-		srcidLabel.setText(srcidLabel.getText()+route.getSrcAirport().getId());
-		srcNameLabel.setText(srcNameLabel.getText()+route.getSrcAirport().getName());
-		srcIATA_FAA_CodeLabel.setText(srcIATA_FAA_CodeLabel.getText()+route.getSrcAirport().getIATA_FAA_Code());
-		srcICAO_CodeLabel.setText(srcICAO_CodeLabel.getText()+route.getSrcAirport().getICAO_Code());
-		srcLatitudeLabel.setText(srcLatitudeLabel.getText()+route.getSrcAirport().getLatitude());
-		srcLongitudeLabel.setText(srcLongitudeLabel.getText()+route.getSrcAirport().getLongitude());
-		srcAltitudeLabel.setText(srcAltitudeLabel.getText()+route.getSrcAirport().getAltitude());
-		srcTimezoneLabel.setText(srcTimezoneLabel.getText()+route.getSrcAirport().getTimezone());
-		srcDSTLabel.setText(srcDSTLabel.getText()+route.getSrcAirport().getDST());
-		srcTz_timezoneLabel.setText(srcTz_timezoneLabel.getText()+route.getSrcAirport().getTz_timezone());
-		srcCityLabel.setText(srcCityLabel.getText()+route.getSrcAirport().getCity().getName());
-		srcCountryLabel.setText(srcCountryLabel.getText()+route.getSrcAirport().getCountry().getName());
-		
-		MainWindow.addGridBagItem(srcPanel, srcidLabel, 0, 0, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(srcPanel, srcNameLabel, 1, 0, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(srcPanel, srcIATA_FAA_CodeLabel, 0, 1, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(srcPanel, srcICAO_CodeLabel, 1, 1, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(srcPanel, srcLatitudeLabel, 0, 2, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(srcPanel, srcLongitudeLabel, 1, 2, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(srcPanel, srcAltitudeLabel, 2, 2, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(srcPanel, srcTimezoneLabel, 0, 3, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(srcPanel, srcDSTLabel, 1, 3, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(srcPanel, srcTz_timezoneLabel, 2, 3, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(srcPanel, srcCityLabel, 0, 4, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(srcPanel, srcCountryLabel, 1, 4, 1, 1, GridBagConstraints.WEST);
-		
-		srcPanel.setBorder(BorderFactory.createTitledBorder("Source Airport"));
-		
-		
-		JPanel dstPanel = new JPanel();
-		dstPanel.setLayout(new GridBagLayout());
-		
-		dstidLabel.setText(dstidLabel.getText()+route.getDstAirport().getId());
-		dstNameLabel.setText(dstNameLabel.getText()+route.getDstAirport().getName());
-		dstIATA_FAA_CodeLabel.setText(dstIATA_FAA_CodeLabel.getText()+route.getDstAirport().getIATA_FAA_Code());
-		dstICAO_CodeLabel.setText(dstICAO_CodeLabel.getText()+route.getDstAirport().getICAO_Code());
-		dstLatitudeLabel.setText(dstLatitudeLabel.getText()+route.getDstAirport().getLatitude());
-		dstLongitudeLabel.setText(dstLongitudeLabel.getText()+route.getDstAirport().getLongitude());
-		dstAltitudeLabel.setText(dstAltitudeLabel.getText()+route.getDstAirport().getAltitude());
-		dstTimezoneLabel.setText(dstTimezoneLabel.getText()+route.getDstAirport().getTimezone());
-		dstDSTLabel.setText(dstDSTLabel.getText()+route.getDstAirport().getDST());
-		dstTz_timezoneLabel.setText(dstTz_timezoneLabel.getText()+route.getDstAirport().getTz_timezone());
-		dstCityLabel.setText(dstCityLabel.getText()+route.getDstAirport().getCity().getName());
-		dstCountryLabel.setText(dstCountryLabel.getText()+route.getDstAirport().getCountry().getName());
-		
-		MainWindow.addGridBagItem(dstPanel, dstidLabel, 0, 0, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(dstPanel, dstNameLabel, 1, 0, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(dstPanel, dstIATA_FAA_CodeLabel, 0, 1, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(dstPanel, dstICAO_CodeLabel, 1, 1, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(dstPanel, dstLatitudeLabel, 0, 2, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(dstPanel, dstLongitudeLabel, 1, 2, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(dstPanel, dstAltitudeLabel, 2, 2, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(dstPanel, dstTimezoneLabel, 0, 3, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(dstPanel, dstDSTLabel, 1, 3, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(dstPanel, dstTz_timezoneLabel, 2, 3, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(dstPanel, dstCityLabel, 0, 4, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(dstPanel, dstCountryLabel, 1, 4, 1, 1, GridBagConstraints.WEST);
-		
-		dstPanel.setBorder(BorderFactory.createTitledBorder("Destination Airport"));
-		
-		JPanel airportsPanel = new JPanel();
-		airportsPanel.setLayout(new BoxLayout(airportsPanel, BoxLayout.X_AXIS));
-		
-		airportsPanel.add(srcPanel);
-		airportsPanel.add(dstPanel);
-		this.add(airportsPanel);
-		
-		
-		JPanel airlinePanel = new JPanel();
-		airlinePanel.setLayout(new GridBagLayout());
-		
-		MainWindow.addGridBagItem(airlinePanel, airlid, 0, 0, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(airlinePanel, airlName, 0, 1, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(airlinePanel, airlAlias, 1, 1, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(airlinePanel, airlIATA_Code, 0, 2, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(airlinePanel, airlICAO_Code, 1, 2, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(airlinePanel, airlCountry, 0, 3, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(airlinePanel, airlCallsign, 0, 4, 1, 1, GridBagConstraints.WEST);
-		MainWindow.addGridBagItem(airlinePanel, airlActive, 1, 4, 1, 1, GridBagConstraints.WEST);
-		
-		airlinePanel.setBorder(BorderFactory.createTitledBorder("Airline"));
-		
-		JPanel endPanel = new  JPanel();
-		endPanel.setLayout(new BoxLayout(endPanel, BoxLayout.X_AXIS));
-		
-		endPanel.add(airlinePanel);
-		
-		JButton hide = new JButton("Hide this");
-		hide.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				RouteInfoPanel.this.setVisible(false);
-			}
-		});
-		
-		endPanel.add(hide);
-		this.add(endPanel);
-		this.setVisible(true);
-	}
-	
 	public void setRoute(Route route) {
 		srcidLabel.setText("ID : "+route.getSrcAirport().getId());
 		srcNameLabel.setText("Name :"+route.getSrcAirport().getName());

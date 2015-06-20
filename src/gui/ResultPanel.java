@@ -1,6 +1,8 @@
 package gui;
 
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -42,9 +44,12 @@ public class ResultPanel extends JPanel {
 	private JComboBox<City> cityName;
 	private JComboBox<Airport> airportName;
 	private JTable routes;
+	@SuppressWarnings("unused")
 	private Earth3DMap earth3dMap;
+	@SuppressWarnings("unused")
 	private static RouteInfoPanel routeInfoPanel;
 	
+	@SuppressWarnings("static-access")
 	public ResultPanel( Earth3DMap earth3dMap, RouteInfoPanel routeInfoPanel) {
 		super();
 		
@@ -58,9 +63,9 @@ public class ResultPanel extends JPanel {
 		countryName = new JComboBox<Country>();
 		cityName = new JComboBox<City>();
 		airportName = new JComboBox<Airport>();
-		countryName.setMaximumSize(new Dimension(200, getMinimumSize().height));
-		cityName.setMaximumSize(new Dimension(200, getMinimumSize().height));
-		airportName.setMaximumSize(new Dimension(200, getMinimumSize().height));
+		countryName.setPreferredSize(new Dimension(150, getMinimumSize().height));
+		cityName.setPreferredSize(new Dimension(150, getMinimumSize().height));
+		airportName.setPreferredSize(new Dimension(150, getMinimumSize().height));
 		airportName.addActionListener(new ActionListener() {
 			
 			@SuppressWarnings("unchecked")
@@ -69,6 +74,7 @@ public class ResultPanel extends JPanel {
 				if(airportName.getSelectedItem() != null) {
 					TableRowSorter<RoutesTableModel> sorter = (TableRowSorter<RoutesTableModel>) routes.getRowSorter();
 					sorter.setRowFilter(RowFilter.regexFilter(airportName.getSelectedItem().toString(), 0, 1));
+					
 					countryName.setSelectedItem(null);
 					cityName.setSelectedItem(null);
 				}
@@ -102,6 +108,9 @@ public class ResultPanel extends JPanel {
 				if(cityName.getSelectedItem() != null) {
 					TableRowSorter<RoutesTableModel> sorter = (TableRowSorter<RoutesTableModel>) routes.getRowSorter();
 					sorter.setRowFilter(RowFilter.regexFilter(cityName.getSelectedItem().toString(), 4, 6));
+					
+					airportName.setSelectedItem(null);
+					countryName.setSelectedItem(null);
 				}
 			}
 		});
@@ -152,19 +161,39 @@ public class ResultPanel extends JPanel {
 			}
 		});
 		
-		add(new JLabel("Filters"));
-	    add(Box.createVerticalStrut(10));
-		add(countryName);
-		add(Box.createVerticalStrut(10));
-		add(cityName);
-		add(Box.createVerticalStrut(10));
-		add(airportName);
+		JPanel filtersPanel = new JPanel(true);
+		filtersPanel.setLayout(new GridBagLayout());
+		MainWindow.addGridBagItem(filtersPanel, new JLabel("Country * :"), 0, 0, 1, 1, GridBagConstraints.EAST);
+		MainWindow.addGridBagItem(filtersPanel,new JLabel("City :"), 0, 1, 1, 1, GridBagConstraints.EAST);
+		MainWindow.addGridBagItem(filtersPanel, new JLabel("Airport :"), 0, 2, 1, 1, GridBagConstraints.EAST);
+
+		MainWindow.addGridBagItem(filtersPanel, countryName, 1, 0, 2, 1, GridBagConstraints.WEST);
+		MainWindow.addGridBagItem(filtersPanel, cityName, 1, 1, 2, 1, GridBagConstraints.WEST);
+		MainWindow.addGridBagItem(filtersPanel, airportName, 1, 2, 2, 1, GridBagConstraints.WEST);
+
+		filtersPanel.setBorder(BorderFactory.createTitledBorder("Filters"));
+		JButton reset = new JButton("Reset");
+		reset.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				countryName.setSelectedItem(null);
+				cityName.setSelectedItem(null);
+				airportName.setSelectedItem(null);
+				@SuppressWarnings("unchecked")
+				TableRowSorter<RoutesTableModel> sorter = (TableRowSorter<RoutesTableModel>) routes.getRowSorter();
+				sorter.allRowsChanged();
+			}
+		});
+		MainWindow.addGridBagItem(filtersPanel, reset, 1, 3, 2, 1, GridBagConstraints.WEST);
+		
+		add(filtersPanel);
 		add(Box.createVerticalStrut(10));
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(routes);
-		scrollPane.setMinimumSize(new Dimension(this.getWidth(), 510));
-		scrollPane.setPreferredSize(new Dimension(this.getWidth(), 600));
+		scrollPane.setMinimumSize(new Dimension(this.getWidth(), 440));
+		scrollPane.setPreferredSize(new Dimension(this.getWidth(), 440));
 		add(scrollPane);
 		
 		Box hideBox = Box.createHorizontalBox();
@@ -207,6 +236,9 @@ public class ResultPanel extends JPanel {
 		model.fromDoubleAray(routes);
 		updateField(model);
 		this.routes.setModel(model);
+		@SuppressWarnings("unchecked")
+		TableRowSorter<RoutesTableModel> sorter = (TableRowSorter<RoutesTableModel>) this.routes.getRowSorter();
+		sorter.allRowsChanged();
 		if(this.routes.getColumnModel().getColumnCount()>0) {
 			this.routes.getColumnModel().removeColumn(this.routes.getColumnModel().getColumn(6));
 			this.routes.getColumnModel().removeColumn(this.routes.getColumnModel().getColumn(5));
@@ -219,6 +251,9 @@ public class ResultPanel extends JPanel {
 		RoutesTableModel model = new RoutesTableModel(routes);
 		updateField(model);
 		this.routes.setModel(model);
+		@SuppressWarnings("unchecked")
+		TableRowSorter<RoutesTableModel> sorter = (TableRowSorter<RoutesTableModel>) this.routes.getRowSorter();
+		sorter.allRowsChanged();
 		if(this.routes.getColumnModel().getColumnCount()>0) {
 			this.routes.getColumnModel().removeColumn(this.routes.getColumnModel().getColumn(6));
 			this.routes.getColumnModel().removeColumn(this.routes.getColumnModel().getColumn(5));
@@ -263,7 +298,6 @@ public class ResultPanel extends JPanel {
 			countryName.setSelectedItem(null);
 			cityName.setSelectedItem(null);
 			airportName.setSelectedItem(null);
-			
 		}
 	}
 	

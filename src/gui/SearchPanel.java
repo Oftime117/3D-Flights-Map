@@ -31,8 +31,10 @@ import applicationPart.Route;
 @SuppressWarnings("serial")
 public class SearchPanel extends JPanel {
 
+	@SuppressWarnings("unused")
 	private ResultPanel resultsPane;
 	
+	@SuppressWarnings("unused")
 	private Earth3DMap earth3dMap;
 	/* Combobox personnalisé avec autocomplétion */
 	private ComboBoxAutoComplete<Airport> srcAirpNameField, dstAirpNameField;
