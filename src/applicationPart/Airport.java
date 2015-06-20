@@ -12,6 +12,10 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
+/**
+ * @Class Classe contenant les informations d'un aéroport
+ * 
+ */
 public class Airport implements Comparable<Airport> {
 
 	private int id;
@@ -28,8 +32,8 @@ public class Airport implements Comparable<Airport> {
 	private Country country;
 	private City city;
 
-	private ArrayList<Route> routesToList;
-	private ArrayList<Route> routesFromList;
+//	private ArrayList<Route> routesToList;
+//	private ArrayList<Route> routesFromList;
 
 	/* Lists contenant la liste des routes de et jusqu'ici
 	 * rangé par ordre alphabétiques (chaque arraylist contient les 
@@ -56,12 +60,10 @@ public class Airport implements Comparable<Airport> {
 		DST = dST;
 		Tz_timezone = tz_timezone;
 
+		/* Ajout de l'aéroport dans les villes et dans les pays*/
+		/* Si le pays n'existe pas dans la liste des pays, on crée le pays, la ville et on ajoute l"aéroport à la ville crée */
 		Country.getCMap().computeIfAbsent(country, (Countrykey) -> {
 			Country buff = new Country(Countrykey);
-			//			City buffCity;
-			//			if (city == null || city.equals("")) buffCity  = new City(name, timezone, dST, tz_timezone, buff);
-			//			else buffCity = new City(city, timezone, dST, tz_timezone, buff);
-
 			City buffCity = new City(city, timezone, dST, tz_timezone, buff);
 			/* On considère que si le pays vient d'être crée 
 			 * il n'y a aucune ville, ni d'aéroports */
@@ -73,12 +75,14 @@ public class Airport implements Comparable<Airport> {
 			return buff;
 		});
 
+		/* Sinon si le pays existe
+		 * On regarde si la ville existe
+		 * Si non existante, on la crée et ajoute l'aéroport
+		 * Sinon on ajoute l'aéroport (si elle n'est pas déjà dedans) */
 		Country.getCMap().computeIfPresent(country, (countryName,countryValue) -> {
 
 			countryValue.getCCMap().computeIfAbsent(city+country, (cityCountryName) -> {
-				//				City buffCity;
-				//				if (city == null || city.equals("")) buffCity  = new City(name, timezone, dST, tz_timezone, countryValue);
-				//				else buffCity = new City(city, timezone, dST, tz_timezone, countryValue);
+
 				City buffCity = new City(city, timezone, dST, tz_timezone, countryValue);
 
 				City.getCityMap().put(cityCountryName, buffCity);
@@ -95,8 +99,6 @@ public class Airport implements Comparable<Airport> {
 			return countryValue;
 		});
 
-		routesFromList = new ArrayList <Route>();
-		routesToList = new ArrayList <Route>();
 		
 		groupedRoutesFromMap = new ConcurrentHashMap<String, ArrayList<Route>>();
 		groupedRoutesToMap = new ConcurrentHashMap<String, ArrayList<Route>>();
@@ -153,25 +155,6 @@ public class Airport implements Comparable<Airport> {
 		return groupedRoutesFromMap;
 	}
 
-	/**
-	 * @return the routesToMap
-	 */
-	public ArrayList<Route> getRoutesToList() {
-		routesToList.sort((route1, route2) -> route1.getDstAirport().getName().compareToIgnoreCase(route2.getDstAirport().getName()));
-		return routesToList;
-//				.stream()
-//				.sorted((route1, route2) -> route1.getDstAirport().getName().compareToIgnoreCase(route2.getDstAirport().getName()))
-//				.collect(Collectors.toCollection(ArrayList::new))
-//				;
-	}
-
-	/**
-	 * @return the routesFromMap
-	 */
-	public ArrayList<Route> getRoutesFromList() {
-		routesFromList.sort((route1, route2) -> route1.getSrcAirport().getName().compareToIgnoreCase(route2.getSrcAirport().getName()));
-		return routesFromList;
-	}
 
 	/**
 	 * @return the name
@@ -299,13 +282,10 @@ public class Airport implements Comparable<Airport> {
 					IATA_FAA_Code, ICAO_Code, latitude, longitude,
 					altitude, timezone, DST, Tz_timezone);
 
+			/* Suivant la présence ou non de l'id, du IATA ou du ICAO, on crée une nouvelle entrée dans la hashMap */
 			if(id != -1) airportsMap.computeIfAbsent(new MultiKey(id, null, null), (k) -> buff);
 			if(IATA_FAA_Code != null) airportsMap.computeIfAbsent(new MultiKey(-1, IATA_FAA_Code, null), (k) -> buff);
 			if(ICAO_Code != null) airportsMap.computeIfAbsent(new MultiKey(-1, null, ICAO_Code), (k) -> buff);
-
-			//			if(id != -1) airportsMap.put(new MultiKey(id, null, null), buff);
-			//			if(IATA_FAA_Code != null) airportsMap.put(new MultiKey(-1, IATA_FAA_Code, null), buff);
-			//			if(ICAO_Code != null) airportsMap.put(new MultiKey(-1, null, ICAO_Code), buff);
 		}
 	}
 
@@ -316,14 +296,7 @@ public class Airport implements Comparable<Airport> {
 	 */
 	@Override
 	public String toString() {
-		//		return "Airport : " + name + "\n\t{" + "\n\t\tid = " + id
-		//				+ "\n\t\tcity = " + city + "\n\t\tcountry = " + country
-		//				+ "\n\t\tIATA_FAA_Code = " + IATA_FAA_Code
-		//				+ "\n\t\tICAO_Code = " + ICAO_Code + "\n\t\tlatitude = "
-		//				+ latitude + "\n\t\tlongitude = " + longitude
-		//				+ "\n\t\taltitude = " + altitude + "\n\t\ttimezone = "
-		//				+ timezone + "\n\t\tDST = " + DST + "\n\t\tTz_timezone = "
-		//				+ Tz_timezone + "\n\t}";
+
 		return  (name != null ? name : "No Name");
 	}
 
@@ -338,7 +311,6 @@ public class Airport implements Comparable<Airport> {
 
 	@Override
 	public int compareTo(Airport o) {
-		// TODO Auto-generated method stub
 		return this.name.compareToIgnoreCase(o.getName());
 	}
 }

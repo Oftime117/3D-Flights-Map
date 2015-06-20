@@ -6,7 +6,15 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+/**
+ * @Class Model des routes pour la JTable du ResultPanel
+ *
+ */
 public class RoutesTableModel extends AbstractTableModel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String[] columns = {"Departure", "Arrival", "Airline", "Departure Country", "Departure City", "Destination Country", "Destination City"};
 	private List<Route> routes = new ArrayList<Route>();
 	

@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+/**
+ * @Class classe contenant les informations d'une ville
+ * 
+ */
 public class City implements Comparable<City>{
 
 	private String name;
@@ -101,21 +105,7 @@ public class City implements Comparable<City>{
 				.filter(airport -> airport.getName().toLowerCase().startsWith(name.toLowerCase()))
 				.sorted((airp1, airp2) -> airp1.getName().compareToIgnoreCase(airp2.getName()))
 				.collect(Collectors.toCollection(ArrayList::new));
-//		
-//		
-//		return getCityMap().values().stream().filter(city -> {
-//			if(city.getName().toLowerCase().startsWith(name.toLowerCase())) System.out.println("name: " + city.getName());
-//			return city.getName().toLowerCase().startsWith(name.toLowerCase());
-//		}).sorted((city1, city2) -> city1.getName().compareToIgnoreCase(city2.getName()))
-//		.collect(Collectors.toCollection(ArrayList::new));
 
-//		getCityMap()
-//		.values()
-//		.stream()
-//		.filter(city -> city.getName().toLowerCase().startsWith(name.toLowerCase()))
-//		.forEach(city -> city);;
-		
-//		getCityMap().entrySet().stream().distinct().filter(predicate)
 	}
 	
 

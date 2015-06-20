@@ -1,6 +1,5 @@
 package gui;
 
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,20 +27,27 @@ import applicationPart.Country;
 import applicationPart.Route;
 import applicationPart.RoutesTableModel;
 
+
+/**
+ * @Class Panel personnalisé gérant et affichant les résultats de la recherche dans un tableau
+ *
+ */
 public class ResultPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JComboBox<Country> countryName;
 	private JComboBox<City> cityName;
 	private JComboBox<Airport> airportName;
 	private JTable routes;
-	private Container parent;
 	private Earth3DMap earth3dMap;
 	private static RouteInfoPanel routeInfoPanel;
 	
-	public ResultPanel(Container parent, Earth3DMap earth3dMap, RouteInfoPanel routeInfoPanel) {
+	public ResultPanel( Earth3DMap earth3dMap, RouteInfoPanel routeInfoPanel) {
 		super();
 		
-		this.parent = parent;
 		this.earth3dMap = earth3dMap;
 		this.routeInfoPanel = routeInfoPanel;
 		
@@ -57,6 +63,7 @@ public class ResultPanel extends JPanel {
 		airportName.setMaximumSize(new Dimension(200, getMinimumSize().height));
 		airportName.addActionListener(new ActionListener() {
 			
+			@SuppressWarnings("unchecked")
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(airportName.getSelectedItem() != null) {
@@ -70,6 +77,7 @@ public class ResultPanel extends JPanel {
 		});
 		countryName.addActionListener(new ActionListener() {
 			
+			@SuppressWarnings("unchecked")
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(countryName.getSelectedItem() != null) {
@@ -88,29 +96,19 @@ public class ResultPanel extends JPanel {
 		});
 		cityName.addActionListener(new ActionListener() {
 			
+			@SuppressWarnings("unchecked")
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(cityName.getSelectedItem() != null) {
 					TableRowSorter<RoutesTableModel> sorter = (TableRowSorter<RoutesTableModel>) routes.getRowSorter();
 					sorter.setRowFilter(RowFilter.regexFilter(cityName.getSelectedItem().toString(), 4, 6));
-
-					
-//					City buffCity = (City) cityName.getSelectedItem();
-//					cityName.removeAll();
-//					buffCity.getCityAirportMap().values().forEach(airport -> airportName.addItem(airport));
-//					airportName.setSelectedItem(null);
-
-//					airportName.setSelectedItem(null);
-//					countryName.setSelectedItem(null);
-
 				}
-				
 			}
 		});
 		
 		routes = new JTable();
 		routes.setAutoCreateRowSorter(true);
-		
+		routes.setPreferredSize(new Dimension(400,600));
 		
 		routes.addMouseListener(new MouseListener() {
 			
@@ -165,8 +163,8 @@ public class ResultPanel extends JPanel {
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(routes);
-		scrollPane.setMinimumSize(new Dimension(this.getWidth(), 700));
-		scrollPane.setPreferredSize(new Dimension(this.getWidth(), 1000));
+		scrollPane.setMinimumSize(new Dimension(this.getWidth(), 510));
+		scrollPane.setPreferredSize(new Dimension(this.getWidth(), 600));
 		add(scrollPane);
 		
 		Box hideBox = Box.createHorizontalBox();
@@ -236,56 +234,37 @@ public class ResultPanel extends JPanel {
 	
 	private void updateField(RoutesTableModel model) {
 		int rows = model.getRowCount();
-		Country buffCountry;
 		countryName.removeAll();
 		cityName.removeAll();
 		airportName.removeAll();
 		for(int i=0; i<rows; i++) {
-//			if(((DefaultComboBoxModel<Airport>)airportName.getModel()).getIndexOf(model.getRouteAt(i).getSrcAirport()) == -1 ) {
-//				airportName.addItem(model.getRouteAt(i).getSrcAirport());
-//			}
-//			if(((DefaultComboBoxModel<Airport>)airportName.getModel()).getIndexOf(model.getRouteAt(i).getDstAirport()) == -1 ) {
-//				airportName.addItem(model.getRouteAt(i).getDstAirport());
-//			}
-//			airportName.setSelectedItem(null);
-//			if(((DefaultComboBoxModel<Country>)countryName.getModel()).getIndexOf(model.getRouteAt(i).getSrcAirport().getCountry()) == -1 ) {
-//				countryName.addItem(model.getRouteAt(i).getSrcAirport().getCountry());
-//			}
-//			if(((DefaultComboBoxModel<Country>)countryName.getModel()).getIndexOf(model.getRouteAt(i).getDstAirport().getCountry()) == -1 ) {
-//				countryName.addItem(model.getRouteAt(i).getDstAirport().getCountry());
-//			}
-//			countryName.setSelectedItem(null);
-//			if(((DefaultComboBoxModel<City>)cityName.getModel()).getIndexOf(model.getRouteAt(i).getSrcAirport().getCity()) == -1 ) {
-//				cityName.addItem(model.getRouteAt(i).getSrcAirport().getCity());
-//			}
-//			if(((DefaultComboBoxModel<City>)cityName.getModel()).getIndexOf(model.getRouteAt(i).getDstAirport().getCity()) == -1 ) {
-//				cityName.addItem(model.getRouteAt(i).getDstAirport().getCity());
-//			}
-//			cityName.setSelectedItem(null);
-			
+			if(((DefaultComboBoxModel<Airport>)airportName.getModel()).getIndexOf(model.getRouteAt(i).getSrcAirport()) == -1 ) {
+				airportName.addItem(model.getRouteAt(i).getSrcAirport());
+			}
+			if(((DefaultComboBoxModel<Airport>)airportName.getModel()).getIndexOf(model.getRouteAt(i).getDstAirport()) == -1 ) {
+				airportName.addItem(model.getRouteAt(i).getDstAirport());
+			}
+			airportName.setSelectedItem(null);
 			if(((DefaultComboBoxModel<Country>)countryName.getModel()).getIndexOf(model.getRouteAt(i).getSrcAirport().getCountry()) == -1 ) {
-				buffCountry = model.getRouteAt(i).getSrcAirport().getCountry();
-				countryName.addItem(buffCountry);
-				
-				buffCountry.getCCMap().values().forEach(city -> {
-					cityName.addItem(city);
-					city.getCityAirportMap().values().forEach(airport -> airportName.addItem(airport));
-				});
-				
+				countryName.addItem(model.getRouteAt(i).getSrcAirport().getCountry());
 			}
 			if(((DefaultComboBoxModel<Country>)countryName.getModel()).getIndexOf(model.getRouteAt(i).getDstAirport().getCountry()) == -1 ) {
-				buffCountry = model.getRouteAt(i).getDstAirport().getCountry();
-				countryName.addItem(buffCountry);
-				
-				buffCountry.getCCMap().values().forEach(city -> {
-					cityName.addItem(city);
-					city.getCityAirportMap().values().forEach(airport -> airportName.addItem(airport));
-				});
+				countryName.addItem(model.getRouteAt(i).getDstAirport().getCountry());
 			}
+			countryName.setSelectedItem(null);
+			if(((DefaultComboBoxModel<City>)cityName.getModel()).getIndexOf(model.getRouteAt(i).getSrcAirport().getCity()) == -1 ) {
+				cityName.addItem(model.getRouteAt(i).getSrcAirport().getCity());
+			}
+			if(((DefaultComboBoxModel<City>)cityName.getModel()).getIndexOf(model.getRouteAt(i).getDstAirport().getCity()) == -1 ) {
+				cityName.addItem(model.getRouteAt(i).getDstAirport().getCity());
+			}
+			cityName.setSelectedItem(null);
+
 			countryName.setSelectedItem(null);
 			cityName.setSelectedItem(null);
 			airportName.setSelectedItem(null);
 			
 		}
 	}
+	
 }

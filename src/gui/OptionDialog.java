@@ -23,6 +23,10 @@ import javax.swing.SpinnerNumberModel;
 
 import com.jme3.math.ColorRGBA;
 
+/**
+ * @Class Classe gérant et affichant le menu Dialog des options
+ *
+ */
 @SuppressWarnings("serial")
 public class OptionDialog extends JDialog {
 

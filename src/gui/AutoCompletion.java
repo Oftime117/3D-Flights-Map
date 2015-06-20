@@ -23,8 +23,12 @@ import javax.swing.text.PlainDocument;
  * http://creativecommons.org/licenses/publicdomain/
  */
 public class AutoCompletion extends PlainDocument {
-    JComboBox comboBox;
-    ComboBoxModel model;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	JComboBox<?> comboBox;
+    ComboBoxModel<?> model;
     JTextComponent editor;
     // flag to indicate if setSelectedItem has been called
     // subsequent calls to remove/insertString should be ignored
@@ -36,7 +40,7 @@ public class AutoCompletion extends PlainDocument {
     KeyListener editorKeyListener;
     FocusListener editorFocusListener;
     
-    public AutoCompletion(final JComboBox comboBox) {
+    public AutoCompletion(final JComboBox<?> comboBox) {
         this.comboBox = comboBox;
         model = comboBox.getModel();
         comboBox.addActionListener(new ActionListener() {
@@ -47,7 +51,7 @@ public class AutoCompletion extends PlainDocument {
         comboBox.addPropertyChangeListener(new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent e) {
                 if (e.getPropertyName().equals("editor")) configureEditor((ComboBoxEditor) e.getNewValue());
-                if (e.getPropertyName().equals("model")) model = (ComboBoxModel) e.getNewValue();
+                if (e.getPropertyName().equals("model")) model = (ComboBoxModel<?>) e.getNewValue();
             }
         });
         editorKeyListener = new KeyAdapter() {
@@ -91,7 +95,7 @@ public class AutoCompletion extends PlainDocument {
         //highlightCompletedText(0);
     }
     
-    public static void enable(JComboBox comboBox) {
+    public static void enable(JComboBox<?> comboBox) {
         // has to be editable
         comboBox.setEditable(true);
         // change the editor's document

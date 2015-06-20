@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+/**
+ * @Class Classe contenant les informations d'un pays
+ * 
+ */
 public class Country implements Comparable<Country>{
 	private String name;
 

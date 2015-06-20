@@ -9,6 +9,10 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
+/**
+ * @Class Classe contenant les informations des routes
+ * 
+ */
 public class Route implements Comparable<Route>{
 
 	private String codeshare;
@@ -22,7 +26,6 @@ public class Route implements Comparable<Route>{
 
 	private static ArrayList<Route> routesList = null;
 
-	private ArrayList<ArrayList<Route>> pathList = null;
 
 	public Route(String airlineCode, int airlineID, String srcAirportCode,
 			int srcAirportID, String dstAirportCode, int dstAirportID,
@@ -32,6 +35,7 @@ public class Route implements Comparable<Route>{
 		this.stops = stops;
 		this.equipment = equipment;
 
+		 
 		if (airlineID != -1)
 			airline = Airline.getairlinesMap().get(
 					new MultiKey(airlineID, null, null));
@@ -89,16 +93,6 @@ public class Route implements Comparable<Route>{
 		this.equipment = equipment;
 	}
 
-
-	
-	
-	/**
-	 * @return the pathList
-	 */
-	public ArrayList<ArrayList<Route>> getPathList() {
-		return pathList;
-	}
-
 	/**
 	 * @return the routesList
 	 */
@@ -127,37 +121,9 @@ public class Route implements Comparable<Route>{
 		return airline;
 	}
 
-	@SuppressWarnings("serial")
 	public static void parse() {
 
-		routesList = new ArrayList<Route>((int) (67663 / 0.75 + 1)) {
-//			/*
-//			 * (non-Javadoc)
-//			 * 
-//			 * @see java.lang.Object#toString()
-//			 */
-//			@Override
-//			public String toString() {
-//
-//				StringBuilder sb = new StringBuilder();
-//				//				Iterator<Route> it = this.values().iterator();
-//
-//				this.stream().distinct().forEach((route) -> {
-//					sb.append("Liste des routes de " + route. + ":\n");
-//					entry.getValue().stream().distinct().forEach((route) -> {
-//						sb.append("\t" + route + "\n");
-//					});
-//
-//				});
-//				this.values().forEach((list) -> sb.append("\n" + list + "\n"));
-//								sb.append("List of Routes : ");
-//								while (it.hasNext()) {
-//									Route buff = it.next();
-//									sb.append("\n" + buff.toString() + "\n");
-//								}
-//				return sb.toString();
-//			}
-		};
+		routesList = new ArrayList<Route>((int) (67663 / 0.75 + 1));
 
 		String path = "ressources/routes.dat";
 
@@ -204,8 +170,6 @@ public class Route implements Comparable<Route>{
 			}
 
 
-
-
 			final Airline airline;
 			final Airport dstAirport , srcAirport;
 
@@ -213,6 +177,12 @@ public class Route implements Comparable<Route>{
 			int stops = Integer.valueOf(csvRecord.get(7));
 			String equipment = csvRecord.get(8);
 
+			
+			/* Recherche des airlines:
+			 * Si on trouve l'id dans le fichier, on cherche dans la liste avec cette id
+			 * Sinon si la longueur de la chaine est de 2, il s'agit du code ICAO, et donc on le fait avec cette clé
+			 * Sinon si c'est 3, c'est le code IATA, donc on la fait avec celui ci comme clé
+			 */
 			if (airlineID != -1)
 				airline = Airline.getairlinesMap().get(
 						new MultiKey(airlineID, null, null));
@@ -228,6 +198,7 @@ public class Route implements Comparable<Route>{
 				}
 			}
 
+			/* La manière de recherche est la même pour les aéroports (que pour les airlines)*/
 			if (srcAirportID != -1)
 				srcAirport = Airport.getairportsMap().get(
 						new MultiKey(srcAirportID, null, null));
@@ -257,13 +228,12 @@ public class Route implements Comparable<Route>{
 				}
 			}
 
+			/* Si l'une des variables est null, on ne lit pas la route */
 			if(airline == null || srcAirport == null || dstAirport == null) continue;
 
 			Route buffRoute = new Route(airline, srcAirport, dstAirport, codeshare, stops, equipment);
 
-//			dstAirport.getRoutesFromList().add(buffRoute);
-//			srcAirport.getRoutesToList().add(buffRoute);
-			
+			/* On ajoute la route dans les hashmap des aéroports de départ d'arrivée de la route */
 			srcAirport.getGroupedRoutesFromMap().computeIfAbsent(dstAirport.getName()
 					+srcAirport.getCity().getName()
 					+srcAirport.getCountry().getName(), key -> {
@@ -305,11 +275,6 @@ public class Route implements Comparable<Route>{
 	 */
 	@Override
 	public String toString() {
-		//		return "Route " + "\n{" + "\n\tairline = " + airline
-		//				+ "\n\n\tsrcAirport = " + srcAirport + "\n\n\tdstAirport = "
-		//				+ dstAirport + "\n\n\tcodeshare = " + codeshare
-		//				+ "\n\tstops = " + stops + "\n\tequipment = " + equipment
-		//				+ "\n}\n";
 		return "Aéroport de départ : " + srcAirport
 				+ "\nAéroport d'arrivée : " + dstAirport
 				+ "\nAirline : " + airline.getName()
@@ -318,6 +283,7 @@ public class Route implements Comparable<Route>{
 				+ " / equipment = " + equipment + ")\n";
 	}
 
+	/* Permet le sort par ordre alphabétique*/
 	@Override
 	public int compareTo(Route o) {
 		return this.srcAirport.getName().compareToIgnoreCase(o.getSrcAirport().getName());

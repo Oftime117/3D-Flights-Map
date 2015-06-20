@@ -7,6 +7,10 @@ import java.util.stream.Collectors;
 
 import javax.swing.JComboBox;
 
+/**
+ * @Brief Combobox personnalisé avec autocomplétion
+ *
+ */
 @SuppressWarnings("serial")
 public class ComboBoxAutoComplete<T extends Comparable<T>> extends JComboBox<T>{
 	public ComboBoxAutoComplete(Collection<T> collection) {

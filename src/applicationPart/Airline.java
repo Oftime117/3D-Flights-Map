@@ -12,6 +12,10 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
+/**
+ * @Class Classe contenant les informations des compagnies aériennes
+ * 
+ */
 public class Airline implements Comparable<Airline>{
 
 	private int id;
@@ -157,6 +161,7 @@ public class Airline implements Comparable<Airline>{
 			Airline buff = new Airline(id, name, alias, IATA_Code, ICAO_Code,
 					callsign, country, active);
 
+			/* Suivant la présence ou non de l'id, du IATA ou du ICAO, on crée une nouvelle entrée dans la hashMap */
 			if (id != -1)
 				airlinesMap.computeIfAbsent(new MultiKey(id, null, null),
 						(k) -> buff);
@@ -166,17 +171,6 @@ public class Airline implements Comparable<Airline>{
 			if (ICAO_Code != null)
 				airlinesMap.computeIfAbsent(new MultiKey(-1, null, ICAO_Code),
 						(k) -> buff);
-
-			// if(id != -1) airlinesMap.put(new MultiKey(id, null, null), buff);
-			// if(IATA_Code != null) airlinesMap.put(new MultiKey(-1, IATA_Code,
-			// null), buff);
-			// if(ICAO_Code != null) airlinesMap.put(new MultiKey(-1, null,
-			// ICAO_Code), buff);
-
-			// Chercher dans toutes les clés si la ville existe, et si elle
-			// existe, l'ajouter dans la map airlinesMap
-			// Implique une obligation de changer les HashMap de
-			// HashMap<MultiKey, ArrayList<Airlines>>
 		}
 	}
 
@@ -188,12 +182,6 @@ public class Airline implements Comparable<Airline>{
 	 */
 	@Override
 	public String toString() {
-		//		return "Airline : " + name + "\n\t{" + "\n\t\tid = " + id
-		//				+ "\n\t\talias = " + alias + "\n\t\tIATA_Code = " + IATA_Code
-		//				+ "\n\t\tICAO_Code = " + ICAO_Code + "\n\t\tcallsign = "
-		//				+ callsign + "\n\t\tcountry = " + country + "\n\t\tactive = "
-		//				+ active + "\n\t}";
-
 		return name +" (" + country + ")";
 	}
 

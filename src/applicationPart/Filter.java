@@ -1,9 +1,12 @@
 package applicationPart;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
+/**
+ * @Class Classe contenant l'implémentation de tous les filtres
+ * 
+ */
 public final class Filter {
 
 	private Filter() {}
@@ -147,37 +150,6 @@ public final class Filter {
 		return buff;
 	}
 
-	public static ArrayList<Route> filterRoutesFromAirport(String name) {
-
-		ArrayList<Route> buff = new ArrayList<Route>();
-
-
-		Airport.getairportsMap().values()
-		.stream()
-		.distinct()
-		.filter(airport -> airport.getName().toLowerCase().equals(name.toLowerCase()))
-		.sorted()
-		.forEach(airport -> buff.addAll(airport.getRoutesToList()));
-
-
-		return buff;
-	}
-
-	public static ArrayList<Route> filterRoutesToAirport(String name) {
-
-		ArrayList<Route> buff = new ArrayList<Route>();
-
-		/**Version 1: Nom exacte*/
-		Airport.getairportsMap().values()
-		.stream()
-		.distinct()
-		.filter(airport -> airport.getName().toLowerCase().equals(name.toLowerCase()))
-		.sorted()
-		.forEach(airport -> buff.addAll(airport.getRoutesFromList()));
-
-		return buff;
-	}
-
 	public static ArrayList<ArrayList<Route>> filterRoutesToOrFromAirport2(String name, String type) {
 		switch (type) {
 		case "from":
@@ -187,21 +159,6 @@ public final class Filter {
 		case "to":
 		case "arrivée de":
 			return filterRoutesToAirport2(name);
-		default:
-			System.err.println("Erreur sur le type entré" + "(" + type + "1)");
-			return null;
-		}
-	}
-
-	public static ArrayList<Route> filterRoutesToOrFromAirport(String name, String type) {
-		switch (type) {
-		case "from":
-		case "départ de":
-			return filterRoutesFromAirport(name);
-
-		case "to":
-		case "arrivée de":
-			return filterRoutesToAirport(name);
 		default:
 			System.err.println("Erreur sur le type entré" + "(" + type + "1)");
 			return null;
@@ -222,7 +179,6 @@ public final class Filter {
 						.values()
 						.stream()
 						.distinct()
-						.filter(array -> array.isEmpty())
 						.sorted((array1, array2) -> array1.get(0).getSrcAirport().getName().compareToIgnoreCase(array2.get(0).getSrcAirport().getName()))
 						.collect(Collectors.toCollection(ArrayList::new)))));
 
@@ -244,37 +200,9 @@ public final class Filter {
 						.values()
 						.stream()
 						.distinct()
-						.sorted((array1, array2) -> array1.get(0).getDstAirport().getName().compareToIgnoreCase(array2.get(0).getDstAirport().getName()))
+						.sorted((array1, array2) -> array1.get(0).getSrcAirport().getName().compareToIgnoreCase(array2.get(0).getSrcAirport().getName()))
 						.collect(Collectors.toCollection(ArrayList::new)))));
 
-
-		return routeList;
-	}
-
-	public static ArrayList<Route> filterRoutesToCity(String name) {
-
-		ArrayList<Route> routeList = new ArrayList<Route>();
-
-		City.getCityMap()
-		.values()
-		.stream()
-		.filter(city -> city.getName().equals(name))
-		.forEach(city -> city.getCityAirportMap().values()
-				.forEach(airport -> routeList.addAll(airport.getRoutesFromList())));
-
-		return routeList;
-	}
-
-	public static ArrayList<Route> filterRoutesFromCity(String name) {
-
-		ArrayList<Route> routeList = new ArrayList<Route>();
-
-		City.getCityMap()
-		.values()
-		.stream()
-		.filter(city -> city.getName().equals(name))
-		.forEach(city -> city.getCityAirportMap().values()
-				.forEach(airport -> routeList.addAll(airport.getRoutesToList())));
 		return routeList;
 	}
 
@@ -293,21 +221,6 @@ public final class Filter {
 		}
 	}
 
-	public static ArrayList<Route> filterRoutesToOrFromCity(String name, String type) {
-		switch (type) {
-		case "from":
-		case "départ de":
-			return filterRoutesFromCity(name);
-
-		case "to":
-		case "arrivée de":
-			return filterRoutesToCity(name);
-		default:
-			System.err.println("Erreur sur le type entré" + "(" + type + ")");
-			return null;
-		}
-	}
-
 	public static ArrayList<ArrayList<Route>> filterRoutesToCountry2(String name) {
 		ArrayList<ArrayList<Route>> routeList = new ArrayList<ArrayList<Route>>();
 
@@ -319,7 +232,6 @@ public final class Filter {
 			.stream()
 			.distinct()
 			.sorted()
-			//.map(city -> city.getCityAirportMap().values())
 			.forEach(city -> {
 				city.getCityAirportMap()
 				.values()
@@ -332,30 +244,6 @@ public final class Filter {
 						.distinct()
 						.sorted((array1, array2) -> array1.get(0).getSrcAirport().getName().compareToIgnoreCase(array2.get(0).getSrcAirport().getName()))
 						.collect(Collectors.toCollection(ArrayList::new))));
-			});
-
-		} catch (NullPointerException e) {
-			System.out.println("Aucun pays contenant la chaine : " + name);
-		}
-		return routeList;
-	}
-
-	public static ArrayList<Route> filterRoutesToCountry(String name) {
-		ArrayList<Route> routeList = new ArrayList<Route>();
-
-		try {
-			Country.getCMap()
-			.get(name)
-			.getCCMap()
-			.values()
-			.stream()
-			.sorted()
-			.forEach(city -> {
-				city.getCityAirportMap()
-				.values()
-				.stream()
-				.sorted()
-				.forEach(airport -> routeList.addAll(airport.getRoutesFromList()));
 			});
 
 		} catch (NullPointerException e) {
@@ -394,30 +282,6 @@ public final class Filter {
 		return routeList;
 	}
 
-	public static ArrayList<Route> filterRoutesFromCountry(String name) {
-		ArrayList<Route> routeList = new ArrayList<Route>();
-		try {
-			Country.getCMap()
-			.get(name)
-			.getCCMap()
-			.values()
-			.stream()
-			.sorted()
-			.forEach(city -> {
-				city.getCityAirportMap()
-				.values()
-				.stream()
-				.sorted()
-				.forEach(airport -> routeList.addAll(airport.getRoutesToList()));
-			});
-
-		} catch (NullPointerException e) {
-			System.out.println("Aucun pays contenant la chaine : " + name);
-		}
-		return routeList;
-
-	}
-
 	public static ArrayList<ArrayList<Route>> filterRoutesToOrFromCountry2(String name, String type) {
 		switch (type) {
 		case "from":
@@ -427,21 +291,6 @@ public final class Filter {
 		case "to":
 		case "arrivée de":
 			return filterRoutesToCountry2(name);
-		default:
-			System.err.println("Erreur sur le type entré" + "(" + type + ")");
-			return null;
-		}
-	}
-
-	public static ArrayList<Route> filterRoutesToOrFromCountry(String name, String type) {
-		switch (type) {
-		case "from":
-		case "départ de":
-			return filterRoutesFromCountry(name);
-
-		case "to":
-		case "arrivée de":
-			return filterRoutesToCountry(name);
 		default:
 			System.err.println("Erreur sur le type entré" + "(" + type + ")");
 			return null;
@@ -473,31 +322,6 @@ public final class Filter {
 		return buff;
 	}
 
-	public static ArrayList<Route> filterRoutesToOrFrom(String toOrFrom, String name, String type) {
-		ArrayList<Route> buff = new ArrayList<Route>();
-
-		switch (type) {
-		case "airport":
-		case "Airport":
-		case "airp":
-			buff = filterRoutesToOrFromAirport(name, toOrFrom);
-			break;
-		case "city":
-		case "City":
-		case "ville":
-			buff = filterRoutesToOrFromCity(name, toOrFrom);
-			break;
-		case "country":
-		case "Country":
-		case "pays":
-			buff = filterRoutesToOrFromCountry(name, toOrFrom);
-			break;
-		default:
-			System.err.println("Erreur sur le type recherché (" + type + ")");
-		}
-		return buff;
-	}
-
 	public static ArrayList<Route> filterByPlaceAndAirline2( String toOrFrom, String name, String type, String airline, boolean activeOnly) {
 		ArrayList<Route> buff = new ArrayList<Route>();
 
@@ -506,24 +330,6 @@ public final class Filter {
 				buff.add(route);
 			}); 
 		});
-		buff.retainAll(filterRoutesByAirline(airline, activeOnly));
-		return buff;
-		
-//		ArrayList<ArrayList<Route>> buff = new ArrayList<ArrayList<Route>>();
-//		
-//		filterRoutesToOrFrom2(toOrFrom, name, type).forEach(array -> {
-//			@SuppressWarnings("unchecked")
-//			ArrayList<Route> buffArray = (ArrayList<Route>) array.clone();
-//			buffArray
-//			buff.add(array);
-//			
-//		});
-//		
-//		return null;
-	}
-
-	public static ArrayList<Route> filterByPlaceAndAirline( String toOrFrom, String name, String type, String airline, boolean activeOnly) {
-		ArrayList<Route> buff = filterRoutesToOrFrom(toOrFrom, name, type);
 		buff.retainAll(filterRoutesByAirline(airline, activeOnly));
 		return buff;
 	}
@@ -545,15 +351,6 @@ public final class Filter {
 		return routesTo;
 	}
 
-	public static ArrayList<Route> filterByDirectAirpToAirp(String srcAirp, String dstAirp, String airline, boolean activeOnly) {
-		ArrayList<Route> buff = new ArrayList<Route>();
-		ArrayList<Route> buff2 = filterRoutesToAirport(dstAirp);
-		if(airline != null) buff = filterByPlaceAndAirline("from", srcAirp, "airp", airline, activeOnly);
-		else buff = filterRoutesFromAirport(srcAirp);
-		buff.retainAll(buff2);
-		return buff;
-	}
-
 	public static ArrayList<ArrayList<Route>> filterByDirectCityToCity2(String srcCity, String dstCity, String airline, boolean activeOnly) {
 		ArrayList<ArrayList<Route>> routesFrom = null;
 		ArrayList<ArrayList<Route>> routesTo = filterRoutesToCity2(dstCity);
@@ -569,23 +366,6 @@ public final class Filter {
 			routesTo.retainAll(routesFrom);
 		}
 		return routesTo;
-	}
-
-	public static ArrayList<Route> filterByDirectCityToCity(String srcCity, String dstCity, String airline, boolean activeOnly) {
-		ArrayList<Route> buff = new ArrayList<Route>();
-		ArrayList<Route> buff2 = filterRoutesToCity(dstCity);
-		if(airline != null) buff = filterByPlaceAndAirline("from", srcCity, "city", airline, activeOnly);
-		else buff = filterRoutesFromCity(srcCity);
-		buff.retainAll(buff2);
-		return buff;
-	}
-	public static ArrayList<Route> filterByDirectCountryToCountry(String srcCountry, String dstCountry, String airline, boolean activeOnly) {
-		ArrayList<Route> buff = new ArrayList<Route>();
-		ArrayList<Route> buff2 = filterRoutesToCountry(dstCountry);
-		if(airline != null) buff = filterByPlaceAndAirline("from", srcCountry, "country", airline, activeOnly);
-		else buff = filterRoutesFromCountry(srcCountry);
-		buff.retainAll(buff2);
-		return buff;
 	}
 
 	public static ArrayList<ArrayList<Route>> filterByDirectCountryToCountry2(String srcCountry, String dstCountry, String airline, boolean activeOnly) {
@@ -630,230 +410,4 @@ public final class Filter {
 		return buff;
 	}
 
-	public static ArrayList<Route> filterByDirectPlaceToPlace(String srcPlace, String dstPlace, String type, String airline, boolean activeOnly) {
-		ArrayList<Route> buff = new ArrayList<Route>();
-
-		switch (type) {
-		case "airport":
-		case "Airport":
-		case "airp":
-			buff = filterByDirectAirpToAirp(srcPlace, dstPlace, airline, activeOnly);
-			break;
-		case "city":
-		case "City":
-		case "ville":
-			buff = filterByDirectCityToCity(srcPlace, dstPlace, airline, activeOnly);
-			break;
-		case "country":
-		case "Country":
-		case "pays":
-			buff = filterByDirectCountryToCountry(srcPlace, dstPlace, airline, activeOnly);
-			break;
-		default:
-			System.err.println("Erreur sur le type recherché (" + type + ")");
-		}
-		return buff;
-	}
-
-	public static ArrayList<ArrayList<Route>> filterByAirpToAirp(String srcAirp, String dstAirp, String airline, boolean activeOnly) {
-
-		ArrayList<Route> buff = filterByDirectAirpToAirp(srcAirp, dstAirp, airline, activeOnly);
-
-		ArrayList<Route> buff1 = new ArrayList<Route>(), buff2 = new ArrayList<Route>();
-
-		ArrayList<ArrayList<Route>> arrayRoute = new ArrayList<ArrayList<Route>>();
-
-		ArrayList<ArrayList<Route>> finalBuff = new ArrayList<ArrayList<Route>>();
-		finalBuff.add(buff);
-
-		if(buff != null) return finalBuff;
-		else {
-			buff1 = filterRoutesFromAirport(srcAirp);
-			buff1.forEach(route -> { 
-				filterByAirpToAirp(route.getSrcAirport().getName(), dstAirp, airline, activeOnly);	
-			});
-
-			return null;
-		}
-	}
-
-	static ArrayList<ArrayList<Route>> routeArray = new ArrayList<ArrayList<Route>>();
-	static long cpt = 0;
-
-	private static boolean filterTest(String srcAirp, String dstAirp, String airline, boolean activeOnly, int profondeur) {
-
-		if(profondeur > 2 || routeArray.size() > 10) return false;
-		//		System.err.println("profondeur: " + profondeur);
-		//		System.err.println("taille route array: " + routeArray.size());
-		//		System.err.println("nom airportsrc: " + srcAirp);
-		ArrayList<Route> routeList = filterByDirectAirpToAirp(srcAirp, dstAirp, airline, activeOnly);
-
-
-		//		if(!routeList.isEmpty()) {
-		//			routeArray.add(routeList);
-		//			return true;
-		//		}
-		//		else {
-		//			
-		//			filterRoutesFromAirport(srcAirp).forEach(route -> {
-		//				
-		//				ArrayList<Route> buffRoute = new ArrayList<Route>();
-		//				if(filterTest(route.getDstAirport().getName(), dstAirp, airline, activeOnly, profondeur+1)) {
-		//					buffRoute.add(route);
-		//					routeArray.add(buffRoute);
-		//				}
-		//			});
-		//		}
-		//		
-		//		
-		//		return false;
-
-
-
-		filterRoutesFromAirport(srcAirp).forEach(route -> {
-
-			ArrayList<Route> buffRoute = new ArrayList<Route>();
-			if(filterTest(route.getDstAirport().getName(), dstAirp, airline, activeOnly, profondeur+1)) {
-				buffRoute.add(route);
-				routeArray.add(buffRoute);
-			}
-		});
-
-		if(!routeList.isEmpty()) {
-			routeArray.add(routeList);
-			return true;
-		}
-		return false;
-	}
-
-	private static boolean filterTest2(String srcAirp, String dstAirp, String airline, boolean activeOnly, int profondeur) {
-
-		if(profondeur > 2 || routeArray.size() > 20) return false;
-
-		ArrayList<ArrayList<Route>> routeList = filterByDirectAirpToAirp2(srcAirp, dstAirp, airline, activeOnly), 
-				buffList = new ArrayList<ArrayList<Route>>();
-		//		
-		//		// vol direct
-		//		if(!routeList.isEmpty()){
-		//			routeArray.addAll(routeList);
-		//			return true;
-		//		}
-
-		// vol non direct
-
-		routeList = filterRoutesFromAirport2(srcAirp);
-
-		//		routeArray.addAll(routeList);
-
-		routeList.forEach(array -> {
-			//			System.out.println(array.get(0));
-			//			
-			//			try {
-			//				Thread.sleep(500);
-			//			} catch (Exception e) {
-			//				// TODO Auto-generated catch block
-			//				e.printStackTrace();
-			//			}
-			ArrayList<ArrayList<Route>> route = filterByDirectAirpToAirp2(array.get(0).getDstAirport().getName(), dstAirp, airline, activeOnly) ;
-			//			if(route.isEmpty()) System.out.println("\nroute empty\n");
-			//			else System.err.println("\nroute pas empty!\n");
-
-			if(!route.isEmpty() && !array.isEmpty()) {
-
-				routeArray.addAll(route);
-
-				System.err.println("pefjzpoefjeifjesoicfjoidqjoidsqfjpoqifjs dfpih dscfohs");
-			} 
-			routeArray.add(array);
-			if (profondeur > 2) routeArray.remove(array);
-			else {
-				filterTest2(array.get(0).getDstAirport().getName(), dstAirp, airline, activeOnly, profondeur+1);
-				// changer peut être la valeur de retour de la fonction
-				// Si vol direct, renvoyer l'arrayList du vol
-			}
-			//			//else routeArray.remove(array);
-		});
-
-		//		if(!routeList.isEmpty()) {
-		//			routeList.forEach(array -> {
-		//				if(filterTest2(array.get(0).getSrcAirport().getName(), dstAirp, airline, activeOnly, profondeur+1) == true) routeArray.add(array);
-		//			});
-		//		}
-
-		return false;
-	}
-
-
-
-
-
-	//test avec une seule liste de route
-	private static ArrayList<ArrayList<Route>> routeList = new ArrayList<ArrayList<Route>>();
-	private static boolean test = false;
-	private static long nb = 0;
-	private static boolean filterTest3(String srcAirp, String dstAirp, String airline, boolean activeOnly, int profondeur) {
-		//if(profondeur > 2) return null;
-		//		if(test == true) return true;
-		ArrayList<ArrayList<Route>> buff1 = filterByDirectAirpToAirp2(srcAirp, dstAirp, airline, activeOnly);
-		// Par définition, la liste si vol direct, ne contient qu'une arraylist de route
-		if(!buff1.isEmpty()) {
-			routeList.add(buff1.get(0));
-			return true;
-		}
-
-		// vol non direct
-		//boolean f;
-		//		filterRoutesFromAirport2(srcAirp).forEach(array -> array.forEach(route -> {
-		//			ArrayList<Route> buff =null;
-		//			if(profondeur < 1) {
-		//				if(test == true) {
-		//					routeList.add(array);
-		//					System.err.println(array+ "\n");
-		//					try {
-		//						Thread.sleep(500);
-		//					} catch (Exception e) {
-		//						// TODO Auto-generated catch block
-		//						e.printStackTrace();
-		//					}
-		//				}
-		//				else test = filterTest3(route.getDstAirport().getName(), dstAirp, airline, activeOnly, profondeur+1);
-
-		//			}
-		//			
-		//		}));
-
-		filterRoutesFromAirport2(srcAirp).forEach(array -> {
-			if(profondeur < 2 && nb < 100) {
-				// Pour chaque truc, ouvrir un thread?
-				if(nb > 90)	{
-					System.out.println("osfgso");			
-				}
-				test = filterTest3(array.get(0).getDstAirport().getName(), dstAirp, airline, activeOnly, profondeur+1);
-				if(test == true) {
-					routeList.add(array);
-					nb++;
-					//						System.err.println(array+ "\n");
-					//						try {
-					//							Thread.sleep(500);
-					//						} catch (Exception e) {
-					//							// TODO Auto-generated catch block
-					//							e.printStackTrace();
-					//						}
-				}
-			}
-
-		});
-		return false;
-	}
-
-	public static ArrayList<ArrayList<Route>> test(String srcAirp, String dstAirp, String airline, boolean activeOnly) {
-		routeArray.clear();
-		routeList.clear();
-		if(Airport.filterByName(dstAirp).isEmpty() || filterRoutesFromAirport2(dstAirp).isEmpty()) return routeList;
-
-		filterTest3(srcAirp, dstAirp, airline, activeOnly, 0);
-		//	System.err.println("array size: " + routeArray.size());
-		Collections.reverse(routeArray);
-		return routeList;
-	}
 }

@@ -2,6 +2,10 @@ package applicationPart;
 
 import java.util.Objects;
 
+/**
+ * @Class Clé personnalisé pouvant contenir et comparer plusieurs informations
+ * 
+ */
 public class MultiKey {
 
 	public final int id;

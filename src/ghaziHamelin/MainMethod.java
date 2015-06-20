@@ -2,25 +2,26 @@ package ghaziHamelin;
 
 import gui.MainWindow;
 
-import java.time.Clock;
-
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import applicationPart.Airline;
 import applicationPart.Airport;
+import applicationPart.Filter;
 import applicationPart.Route;
 
-import com.jme3.system.AppSettings;
-
+/**
+ * @Class classe principal contenant la méthode main
+ * 
+ */
 public class MainMethod {
-
-	public static Clock clock = Clock.systemDefaultZone();
-	public static long deb = clock.millis();
 	
+	/**@brief Fonction qui gère la partie applicative, ie le parsage et les filtres
+	 * 
+	 */
 	public static void applicationInit() {
-		
+		/* Utilisation des threads, même si en pratique la vitesse est quasi la même en séquentiel */
 		Thread portThread = new Thread() {
 			@Override
 			public synchronized void run() {
@@ -44,45 +45,32 @@ public class MainMethod {
 			e.printStackTrace();
 		}
 
-		Route.parse();
-		System.err.println("\n\n\n" + (System.currentTimeMillis() - deb));
-
-		deb = clock.millis();
+		Route.parse();	
 		
 		
-//		Filter.filterRoutesFromAirport2("charles de gaulle").stream().limit(52).forEach(System.out::println);
-
-//		System.out.println(City.getCityMap().get("ParisFrance"));
-
-//		Filter.filterByDirectAirpToAirp2("Charles de Gaulle", "Zagreb", "Air France", false).forEach(System.out::println);;
-//		Filter.filterByDirectCountryToCountry2("France", "United Kingdom", null, false).forEach(System.out::println);
-		//52
-//		Filter.filterByDirectPlaceToPlace2("Charles de gaulle", "Dallas Fort Worth Intl", "airp", null, true).forEach(System.out::println);
-//		Filter.test("Charles de gaulle", "Dallas Fort Worth Intl", null, false).forEach(System.out::println);
-//		Filter.test("Charles de gaulle", "La Guardia", null, false).forEach(System.out::println);;
-//		System.err.println(Filter.test("Charles de gaulle", "La Guardia", null, false).size());
-//		Airport.filterByName("charles").forEach(System.out::println);
-//		Filter.filterAirportsByCity("London").forEach(System.out::println);
-//		City.filterByName("Paris").forEach(System.out::println);
-//		System.out.println(Filter.filterRoutesToAirport2("Charles de Gaulle").stream().distinct().count());
-//		Filter.filterAirportByCountry("France").forEach(System.out::println);
-//		Filter.filterRoutesByAirline("Air France", true).forEach(System.out::println);;
-		System.out.println(-deb + clock.millis());
+		Filter.filterRoutesFromCity2("Paris")
+		.stream()
+		.forEach(array -> array.stream()
+				.filter(route -> {
+					return route.getDstAirport().getCity().getName().equals("London");
+				}).forEach(System.out::println));
+		System.err.println("epfspofjopfjeoooooooooooooooooooooooooooooooooooooooooooo");
+//		Filter.filterRoutesFromCity2("Paris").forEach(System.out::println);
 		
+//		Filter.filterByDirectCityToCity2("Paris", "London", null, false).forEach(System.out::println);
+		//Filter.filterByDirectAirpToAirp2("Charles de gaulle", "Heathrow", null, false).forEach(System.out::println);;
 	}
 	
 	
+	/**@brief Fonction qui initialise la partie graphique (3D et swing)
+	 * 
+	 */
 	public static void guiInit() {
-		AppSettings settings = new AppSettings(true);
-		settings.setResolution(1600, 1000);
-		settings.setSamples(8);
-		settings.setVSync(true);
-		
+		/* Lancement dans le EDT (Event Dispatch Thread) de la partie graphique du logiciel*/
 		SwingUtilities.invokeLater(new Runnable() {
 			
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
 				new MainWindow();
 			}
 		});
@@ -90,7 +78,7 @@ public class MainMethod {
 	}
 	
 	public static void main(String[] args) {
-		
+		/* Changement du Look And Feel suivant le système sur lequel est lancé le programme */
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException
@@ -100,13 +88,5 @@ public class MainMethod {
 		
 		applicationInit();
 		guiInit();
-		
-//		try {
-//			Thread.sleep(5000);
-//			return;
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 	}
 }

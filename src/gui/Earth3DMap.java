@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import jme3tools.optimize.GeometryBatchFactory;
 import applicationPart.Airport;
-import applicationPart.Filter;
 import applicationPart.Route;
 
 import com.jme3.app.SimpleApplication;
@@ -27,9 +26,8 @@ import com.jme3.util.BufferUtils;
 
 
 /**
- * @author Amirali Ghazi
- * @author Enzo Hamelin
- *
+ * @Class Classe gérant la partie 3D (map 3D) de l'application
+ * 
  */
 
 public class Earth3DMap extends SimpleApplication {
@@ -56,7 +54,7 @@ public class Earth3DMap extends SimpleApplication {
 	private float airportRadius = 0.002f;
 	private float arcWidth = 1.5f;
 
-	private ArrayList<ArrayList<Route>> buffRouteArray;
+	private ArrayList<ArrayList<Route>> resultRouteArray;
 
 	
 	@Override
@@ -76,7 +74,6 @@ public class Earth3DMap extends SimpleApplication {
 		rootNode.attachChild(earthNode);
 
 
-		ArrayList<ArrayList<Route>> buff = Filter.filterRoutesFromAirport2("Charles de Gaulle");
 
 		/* Initialisation de la caméra */
 		camInit();
@@ -96,6 +93,12 @@ public class Earth3DMap extends SimpleApplication {
 				* FastMath.cos(lat_cor * FastMath.DEG_TO_RAD));
 	}
 
+	/**@Brief Affiche un aéroport
+	 * @param latitude
+	 * @param longitude
+	 * @param name
+	 * @param color
+	 */
 	public void displayAirport(float latitude, float longitude, String name, ColorRGBA color)
 	{
 		Sphere sphere = new Sphere(16, 8, airportRadius);
@@ -110,6 +113,9 @@ public class Earth3DMap extends SimpleApplication {
 		if (name.equals("dstAirport") && !dstAirportsNode.hasChild(airpGeom)) dstAirportsNode.attachChild(airpGeom);
 	}
 
+	/**
+	 * @Brief Affiche tous les aéroports
+	 */
 	public void displayAllGeneralAirports() {
 		Airport.getairportsMap()
 		.values()
@@ -122,7 +128,7 @@ public class Earth3DMap extends SimpleApplication {
 	 * @param routeArray la liste à afficher
 	 */
 	public void displayRoutes(ArrayList<ArrayList<Route>> routeArray) {
-		buffRouteArray = routeArray;
+		resultRouteArray = routeArray;
 		routeArray.stream().distinct().filter(array -> !array.isEmpty())
 		.forEach(array -> array.stream().distinct()
 				.forEach(route -> displayArc(route
@@ -221,7 +227,7 @@ public class Earth3DMap extends SimpleApplication {
 
 	public void resetAllRoutes() {
 		hideAllArcs();
-		displayRoutes(buffRouteArray);
+		displayRoutes(resultRouteArray);
 	}
 	
 	
@@ -269,6 +275,12 @@ public class Earth3DMap extends SimpleApplication {
 
 	
 
+	/**@brief Affiche une trajectoire
+	 * @param lat1
+	 * @param lon1
+	 * @param lat2
+	 * @param lon2
+	 */
 	public void displayArc(float lat1, float lon1, float lat2, float lon2) {
 
 		displayAirport(lat1, lon1, "srcAirport", srcPrevColor);
